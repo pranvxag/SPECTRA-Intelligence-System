@@ -6,16 +6,15 @@ import pandas as pd
 import numpy as np
 from components.styles import load_css
 from components.sidebar import render_sidebar
+from components.navbar import render_navbar
 from components.cards import section_title, achievement_item, glow_divider, metric_card
 from components.charts import line_chart, area_chart
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 st.set_page_config(page_title="SPECTRA — Growth Tracker", page_icon="📈", layout="wide")
 load_css()
 render_sidebar()
+st.session_state["_current_page"] = "Growth Tracker"
+render_navbar()
 
 profile = st.session_state.get("student_profile", {})
 

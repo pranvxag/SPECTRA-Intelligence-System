@@ -5,17 +5,16 @@ import streamlit as st
 import pandas as pd
 from components.styles import load_css
 from components.sidebar import render_sidebar
+from components.navbar import render_navbar
 from components.cards import metric_card, career_card, section_title, glow_divider
 from components.charts import radar_chart, line_chart, gauge_chart
 from utils.career_engine import compute_intelligence_score, rank_careers
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 st.set_page_config(page_title="SPECTRA — Intelligence Hub", page_icon="🎯", layout="wide")
 load_css()
 render_sidebar()
+st.session_state["_current_page"] = "Intelligence Hub"
+render_navbar()
 
 profile  = st.session_state.get("student_profile", {})
 ranked   = st.session_state.get("ranked_careers", [])

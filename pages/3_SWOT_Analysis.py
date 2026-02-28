@@ -4,16 +4,15 @@ pages/3_SWOT_Analysis.py — Dynamic SWOT + Strategic Roadmap
 import streamlit as st
 from components.styles import load_css
 from components.sidebar import render_sidebar
+from components.navbar import render_navbar
 from components.cards import section_title, swot_card, roadmap_card, glow_divider, metric_card
 from utils.career_engine import generate_swot, rank_careers
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 st.set_page_config(page_title="SPECTRA — SWOT Analysis", page_icon="📊", layout="wide")
 load_css()
 render_sidebar()
+st.session_state["_current_page"] = "SWOT Analysis"
+render_navbar()
 
 profile = st.session_state.get("student_profile", {})
 ranked  = st.session_state.get("ranked_careers", [])

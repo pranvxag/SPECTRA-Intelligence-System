@@ -6,16 +6,15 @@ import pandas as pd
 import numpy as np
 from components.styles import load_css
 from components.sidebar import render_sidebar
+from components.navbar import render_navbar
 from components.cards import section_title, metric_card, glow_divider
 from components.charts import stacked_bar, line_chart, donut_chart
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 
 st.set_page_config(page_title="SPECTRA — Institutional View", page_icon="🏛️", layout="wide")
 load_css()
 render_sidebar()
+st.session_state["_current_page"] = "Institutional View"
+render_navbar()
 
 st.markdown(section_title("🏛️", "Institutional Intelligence", "Dashboard"), unsafe_allow_html=True)
 

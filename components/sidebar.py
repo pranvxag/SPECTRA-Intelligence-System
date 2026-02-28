@@ -89,8 +89,8 @@ def render_sidebar():
         details summary::-webkit-details-marker { display: none; }
         </style>
         <a class="spectra-logo-btn" href="/" target="_self">
-            <div class="spectra-logo-text">⚡ SPECTRA</div>
-            <div class="spectra-logo-sub">Intelligence System · Home</div>
+            <div class="spectra-logo-text">⚡ SPECTRA </div>
+            <div class="spectra-logo-sub"></div>
         </a>
         """, unsafe_allow_html=True)
 

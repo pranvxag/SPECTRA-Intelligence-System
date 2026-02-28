@@ -5,15 +5,14 @@ Collects real data that powers all other modules.
 import streamlit as st
 from components.styles import load_css
 from components.sidebar import render_sidebar
+from components.navbar import render_navbar
 from utils.career_engine import rank_careers, compute_intelligence_score
-
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 st.set_page_config(page_title="SPECTRA — Student Intake", page_icon="✏️", layout="wide")
 load_css()
 render_sidebar()
+st.session_state["_current_page"] = "Student Intake"
+render_navbar()
 
 # ── Page header ───────────────────────────────────────────────────────────
 st.markdown("""
