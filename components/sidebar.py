@@ -11,6 +11,19 @@ def render_sidebar():
     """Call at the top of every page."""
     load_css()
 
+    # Force sidebar always open - belt & braces
+    st.markdown("""
+    <style>
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="collapsedControl"] { display: none !important; }
+    section[data-testid="stSidebar"] {
+        transform: none !important;
+        min-width: 21rem !important;
+        display: flex !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
     profile     = st.session_state.get("student_profile", {})
     intel_score = st.session_state.get("intelligence_score", 0)
     career_fit  = st.session_state.get("top_career_fit", 0)
@@ -18,16 +31,33 @@ def render_sidebar():
 
     with st.sidebar:
 
-        # ── Brand ──────────────────────────────────────────────────────
-        st.image("https://img.icons8.com/fluency/96/student-center.png", width=72)
+        # ── SPECTRA Logo ────────────────────────────────────────────────
         st.markdown("""
-        <div style="margin-bottom:0.5rem;">
-            <div class="sidebar-brand">👤 Student Profile</div>
+        <div style="padding: 1rem 0 0.5rem; border-bottom: 1px solid #1C2740; margin-bottom: 1rem;">
+            <div style="font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800;
+                        background: linear-gradient(135deg, #ffffff 30%, #00D4FF 100%);
+                        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                        letter-spacing: -1px; line-height:1;">
+                ⚡ SPECTRA
+            </div>
+            <div style="font-size:0.65rem; color:#2A3A58; letter-spacing:2px;
+                        text-transform:uppercase; margin-top:0.2rem;">
+                Intelligence System
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # ── Student Profile Header ──────────────────────────────────────
+        st.image("https://img.icons8.com/fluency/96/student-center.png", width=60)
+        st.markdown("""
+        <div style="margin-bottom:0.3rem;">
+            <div style="font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700;
+                        color:#00D4FF;">👤 Student Profile</div>
         </div>
         """, unsafe_allow_html=True)
 
         # ── Quick Profile Form (always visible) ────────────────────────
-        with st.expander("Quick Student Info", expanded=True):
+        with st.expander("📋 Quick Student Info", expanded=True):
             sb_name     = st.text_input("Name",       value=profile.get("name", ""), placeholder="Your name")
             sb_id       = st.text_input("Student ID", value=profile.get("student_id", ""), placeholder="e.g. CS2024001")
             sb_semester = st.selectbox("Current Semester", list(range(1, 9)),

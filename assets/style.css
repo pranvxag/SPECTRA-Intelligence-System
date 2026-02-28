@@ -25,44 +25,19 @@ html, body, .stApp {
 #MainMenu, footer, header { visibility: hidden; }
 .block-container { padding-top: 1rem !important; max-width: 1400px; }
 
-/* ── ALWAYS SHOW SIDEBAR TOGGLE BUTTON ── */
+/* ── LOCK SIDEBAR OPEN — hide collapse/expand controls ── */
+[data-testid="stSidebarCollapseButton"],
 [data-testid="collapsedControl"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+section[data-testid="stSidebar"] {
+    transform: none !important;
+    width: 21rem !important;
+    min-width: 21rem !important;
     display: flex !important;
     visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    top: 50% !important;
-    left: 0 !important;
-    z-index: 9999 !important;
-    background: #00D4FF !important;
-    border-radius: 0 12px 12px 0 !important;
-    padding: 0.6rem 0.4rem !important;
-    box-shadow: 4px 0 20px rgba(0, 212, 255, 0.4) !important;
-    transform: translateY(-50%) !important;
-    cursor: pointer !important;
-}
-
-[data-testid="collapsedControl"]:hover {
-    background: #00AACC !important;
-    box-shadow: 4px 0 30px rgba(0, 212, 255, 0.6) !important;
-}
-
-[data-testid="collapsedControl"] svg {
-    fill: #000 !important;
-    width: 18px !important;
-    height: 18px !important;
-}
-
-[data-testid="stSidebarCollapseButton"] {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    color: #00D4FF !important;
-}
-
-[data-testid="stSidebarCollapseButton"]:hover {
-    background: rgba(0, 212, 255, 0.1) !important;
-    border-radius: 8px !important;
 }
 
 /* ── CSS Variables ── */
@@ -126,6 +101,7 @@ html, body, .stApp {
     letter-spacing: -2px;
     background: linear-gradient(135deg, #FFFFFF 30%, var(--cyan) 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     margin: 0;
     line-height: 1;
@@ -462,6 +438,7 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     font-weight: 800;
     background: linear-gradient(135deg, #fff 30%, var(--cyan));
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0.5rem;
 }
@@ -616,3 +593,22 @@ hr { border-color: var(--slate-500) !important; }
     .hero-wordmark { font-size: 2.8rem; }
     .mc-value { font-size: 1.8rem; }
 }
+
+/* ── Hide Streamlit default page nav links in sidebar ── */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"],
+section[data-testid="stSidebar"] [data-testid="stSidebarNavItems"],
+section[data-testid="stSidebar"] nav,
+section[data-testid="stSidebar"] ul[data-testid="stSidebarNavItems"] {
+    display: none !important;
+}
+
+/* ── Fix expander arrow icon showing as text ── */
+button[data-testid="stExpanderToggleIcon"] {
+    font-size: 0 !important;
+}
+[data-testid="stExpander"] summary span[data-testid="stExpanderToggleIcon"] span {
+    display: none !important;
+}
+/* Show a proper arrow instead */
+details > summary::marker { font-size: 1rem; }
+details[open] > summary { color: #00D4FF; }
