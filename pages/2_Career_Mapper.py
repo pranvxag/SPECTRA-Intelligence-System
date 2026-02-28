@@ -8,6 +8,10 @@ from components.sidebar import render_sidebar
 from components.cards import section_title, skill_bar, formula_box, glow_divider, pill
 from components.charts import scatter_bubble, donut_chart
 from utils.career_engine import rank_careers, CAREERS
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 st.set_page_config(page_title="SPECTRA — Career Mapper", page_icon="🗺️", layout="wide")
 load_css()
