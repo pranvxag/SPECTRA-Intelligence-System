@@ -1,5 +1,7 @@
 # ⚡ SPECTRA v2.0 — Student Intelligence & Career Guidance System
 
+**Visit us at: https://v3spectraedu.streamlit.app/**
+
 > IIT Techkriti 2026 Innovation Challenge
 
 ## 🗂️ Project Structure
