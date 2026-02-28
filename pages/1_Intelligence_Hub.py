@@ -9,6 +9,9 @@ from components.navbar import render_navbar
 from components.cards import metric_card, career_card, section_title, glow_divider
 from components.charts import radar_chart, line_chart, gauge_chart
 from utils.career_engine import compute_intelligence_score, rank_careers
+from utils.ml_engine import predict_career_fit, predict_student_cluster, predict_cgpa_trajectory
+from utils.analytics_engine import benchmark_student, skill_gap_analysis, growth_timeline
+from utils.data_engine import get_feature_vector
 
 st.set_page_config(page_title="SPECTRA — Intelligence Hub", page_icon="🎯", layout="wide")
 load_css()
@@ -17,7 +20,23 @@ st.session_state["_current_page"] = "Intelligence Hub"
 render_navbar()
 
 profile  = st.session_state.get("student_profile", {})
-ranked   = st.session_state.get("ranked_careers", [])
+
+# ── Run ML backend if profile has skills ──────────────────────────────────
+if profile and profile.get("skills") and not st.session_state.get("ml_ran"):
+    with st.spinner("🤖 Running AI analysis..."):
+        try:
+            ml_careers = predict_career_fit(profile)
+            st.session_state.ranked_careers     = ml_careers
+            st.session_state.top_career_fit     = ml_careers[0]["fit"] if ml_careers else 0
+            st.session_state.student_cluster    = predict_student_cluster(profile)
+            st.session_state.cgpa_trajectory    = predict_cgpa_trajectory(profile, 4)
+            st.session_state.ml_ran             = True
+        except Exception as e:
+            st.warning(f"ML engine fallback: {e}")
+
+ranked    = st.session_state.get("ranked_careers", [])
+cluster   = st.session_state.get("student_cluster", {})
+traj_data = st.session_state.get("cgpa_trajectory", [])
 intel    = st.session_state.get("intelligence_score", 0)
 
 # ── Header ────────────────────────────────────────────────────────────────
