@@ -5,6 +5,11 @@ import streamlit as st
 from components.styles import load_css
 from components.sidebar import render_sidebar
 from components.cards import section_title, about_feature, formula_box, glow_divider
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+
 
 st.set_page_config(page_title="SPECTRA — About", page_icon="❓", layout="wide")
 load_css()
