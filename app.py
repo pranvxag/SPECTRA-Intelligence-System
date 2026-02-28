@@ -318,7 +318,46 @@ st.markdown("""
     </div>
     <div class="nav-links">
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
 
+.nav-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.nav-button {
+    width: 180px;
+    height: 60px;
+    border-radius: 12px;
+    border: 1px solid #2E2E2E;
+    background-color: #111827;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.nav-button:hover {
+    background-color: #1F2937;
+    transform: scale(1.03);
+}
+
+.nav-button.active {
+    background-color: #FF4B4B;
+}
+
+</style>
+""", unsafe_allow_html=True)
 # Navigation items - Reflecting the new vision
 nav_items = [
     {"name": "Intelligence Hub", "page": "Intelligence Hub", "icon": "🎯", "desc": "Student Overview"},
@@ -371,7 +410,7 @@ with st.sidebar:
         semester = st.selectbox("Current Semester", [1,2,3,4,5,6,7,8])
         branch = st.selectbox("Branch", ["Computer Science", "Electronics", "Mechanical", "Civil", "Electrical"])
     
-    st.markdown("---")
+    st.markdown("---") 
     
     # Real-time Intelligence Stats
     st.markdown("### 🧠 Intelligence Stats")
