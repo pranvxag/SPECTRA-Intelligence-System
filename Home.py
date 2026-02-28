@@ -6,10 +6,6 @@ import streamlit as st
 from components.styles import load_css
 from components.sidebar import render_sidebar
 
-import sys
-import os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
 st.set_page_config(
     page_title="SPECTRA — Student Intelligence System",
     page_icon="⚡",
