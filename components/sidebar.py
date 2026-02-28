@@ -31,20 +31,67 @@ def render_sidebar():
 
     with st.sidebar:
 
-        # ── SPECTRA Logo ────────────────────────────────────────────────
+        # ── SPECTRA Clickable Logo ──────────────────────────────────────
         st.markdown("""
-        <div style="padding: 1rem 0 0.5rem; border-bottom: 1px solid #1C2740; margin-bottom: 1rem;">
-            <div style="font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800;
-                        background: linear-gradient(135deg, #ffffff 30%, #00D4FF 100%);
-                        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-                        letter-spacing: -1px; line-height:1;">
-                ⚡ SPECTRA
-            </div>
-            <div style="font-size:0.65rem; color:#2A3A58; letter-spacing:2px;
-                        text-transform:uppercase; margin-top:0.2rem;">
-                Intelligence System
-            </div>
-        </div>
+        <style>
+        @keyframes logoGlow {
+            0%   { box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+            50%  { box-shadow: 0 0 25px rgba(0,212,255,0.5); }
+            100% { box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+        }
+        @keyframes textShimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .spectra-logo-btn {
+            display: block;
+            width: 100%;
+            background: rgba(0,212,255,0.04);
+            border: 1px solid rgba(0,212,255,0.15);
+            border-radius: 14px;
+            padding: 0.9rem 1.1rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+        .spectra-logo-btn:hover {
+            background: rgba(0,212,255,0.1) !important;
+            border-color: rgba(0,212,255,0.5) !important;
+            transform: scale(1.02);
+            animation: none;
+            box-shadow: 0 0 30px rgba(0,212,255,0.4);
+        }
+        .spectra-logo-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff 0%, #00D4FF 40%, #fff 60%, #00D4FF 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+            animation: textShimmer 4s linear infinite;
+        }
+        .spectra-logo-sub {
+            font-size: 0.6rem;
+            color: #2A3A58;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            margin-top: 0.1rem;
+        }
+        /* Hide default sidebar nav page links */
+        section[data-testid="stSidebar"] [data-testid="stSidebarNav"],
+        section[data-testid="stSidebar"] ul { display: none !important; }
+        /* Fix expander arrow_double text bug */
+        [data-testid="stExpanderToggleIcon"] { display: none !important; }
+        details summary::-webkit-details-marker { display: none; }
+        </style>
+        <a class="spectra-logo-btn" href="/" target="_self">
+            <div class="spectra-logo-text">⚡ SPECTRA</div>
+            <div class="spectra-logo-sub">Intelligence System · Home</div>
+        </a>
         """, unsafe_allow_html=True)
 
         # ── Student Profile Header ──────────────────────────────────────
