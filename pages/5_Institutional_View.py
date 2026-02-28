@@ -23,6 +23,12 @@ if "inst_uploaded_file" not in st.session_state:
     st.session_state["inst_uploaded_file"] = None
 
 import os
+import pandas as pd
+
+from utils.data_engine import load_file, validate, preprocess
+from utils.ml_engine import batch_analyse, train_all_models
+from utils.analytics_engine import compute_cohort_stats, department_report
+from utils.report_generator import generate_batch_csv
 
 # ── Upload dialog ─────────────────────────────────────────────────────────
 @st.dialog("📤 Upload Student Data")
@@ -82,11 +88,36 @@ def upload_dialog():
     st.markdown('<div style="height:0.5rem;"></div>', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1:
-        if st.button("✅ Confirm Upload", use_container_width=True, type="primary",
+        if st.button("✅ Confirm & Analyse", use_container_width=True, type="primary",
                      disabled=(uploaded is None)):
             if uploaded:
-                st.session_state["show_upload_modal"] = False
-                st.rerun()
+                with st.spinner("🔄 Processing uploaded data..."):
+                    df_raw, load_errors = load_file(uploaded)
+                    if load_errors:
+                        st.error("\n".join(load_errors))
+                    else:
+                        is_valid, errors, warnings = validate(df_raw)
+                        for w in warnings:
+                            st.warning(w)
+                        if not is_valid:
+                            st.error("Validation failed: " + "; ".join(errors))
+                        else:
+                            df_clean = preprocess(df_raw)
+                            # Retrain ML with real data
+                            train_all_models(df_clean)
+                            # Run batch analysis
+                            batch_results = batch_analyse(df_clean)
+                            cohort_stats  = compute_cohort_stats(df_clean)
+                            dept_report   = department_report(df_clean)
+                            # Store in session state
+                            st.session_state["uploaded_df"]      = df_clean
+                            st.session_state["batch_results"]    = batch_results
+                            st.session_state["cohort_stats"]     = cohort_stats
+                            st.session_state["dept_report"]      = dept_report
+                            st.session_state["student_db_live"]  = df_clean.to_dict("records")
+                            st.session_state["show_upload_modal"] = False
+                            st.success(f"✅ Analysed {len(df_clean)} students!")
+                            st.rerun()
     with c2:
         if st.button("✖ Cancel", use_container_width=True):
             st.session_state["show_upload_modal"] = False
@@ -171,7 +202,22 @@ with ctrl3:
 with ctrl4:
     if st.button("🔄 Refresh Data", use_container_width=True,
                  help="Re-run analysis with latest data"):
+        st.session_state.pop("ml_ran", None)
         st.rerun()
+
+    # Show download batch results if available
+    batch_df = st.session_state.get("batch_results")
+    if batch_df is not None:
+        st.markdown("<div style='height:0.3rem;'></div>", unsafe_allow_html=True)
+        csv_bytes = generate_batch_csv(batch_df)
+        st.download_button(
+            "📊 Export Results",
+            data=csv_bytes,
+            file_name="spectra_batch_results.csv",
+            mime="text/csv",
+            use_container_width=True,
+            help="Download full batch ML analysis results",
+        )
 
 st.markdown('</div>', unsafe_allow_html=True)
 
