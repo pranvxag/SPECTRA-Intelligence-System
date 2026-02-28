@@ -34,63 +34,75 @@ def render_sidebar():
         # ── SPECTRA Clickable Logo ──────────────────────────────────────
         st.markdown("""
         <style>
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@800&display=swap');
+
         @keyframes logoGlow {
-            0%   { box-shadow: 0 0 10px rgba(0,212,255,0.2); }
-            50%  { box-shadow: 0 0 25px rgba(0,212,255,0.5); }
-            100% { box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+            0%   { box-shadow: 0 0 10px rgba(0,212,255,0.15); border-color: rgba(0,212,255,0.2); }
+            50%  { box-shadow: 0 0 28px rgba(0,212,255,0.45); border-color: rgba(0,212,255,0.6); }
+            100% { box-shadow: 0 0 10px rgba(0,212,255,0.15); border-color: rgba(0,212,255,0.2); }
         }
-        @keyframes textShimmer {
+        @keyframes shimmer {
             0%   { background-position: -200% center; }
             100% { background-position: 200% center; }
         }
         .spectra-logo-btn {
-            display: block;
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
             width: 100%;
-            background: rgba(0,212,255,0.04);
-            border: 1px solid rgba(0,212,255,0.15);
-            border-radius: 14px;
-            padding: 0.9rem 1.1rem;
-            margin-bottom: 1rem;
+            background: rgba(0,212,255,0.03);
+            border: 1px solid rgba(0,212,255,0.2);
+            border-radius: 16px;
+            padding: 1rem 1rem 0.8rem;
+            margin-bottom: 1.2rem;
             cursor: pointer;
-            text-decoration: none;
+            text-decoration: none !important;
+            -webkit-text-decoration: none !important;
             transition: all 0.3s ease;
             animation: logoGlow 3s ease-in-out infinite;
         }
         .spectra-logo-btn:hover {
-            background: rgba(0,212,255,0.1) !important;
-            border-color: rgba(0,212,255,0.5) !important;
+            background: rgba(0,212,255,0.08) !important;
             transform: scale(1.02);
             animation: none;
-            box-shadow: 0 0 30px rgba(0,212,255,0.4);
+            box-shadow: 0 0 35px rgba(0,212,255,0.4);
+            border-color: rgba(0,212,255,0.7) !important;
         }
         .spectra-logo-text {
-            font-family: 'Syne', sans-serif;
-            font-size: 1.7rem;
+            font-family: 'Syne', sans-serif !important;
+            font-size: 1.9rem;
             font-weight: 800;
-            background: linear-gradient(90deg, #fff 0%, #00D4FF 40%, #fff 60%, #00D4FF 100%);
-            background-size: 200% auto;
+            letter-spacing: -1px;
+            line-height: 1;
+            background: linear-gradient(90deg, #ffffff 0%, #00D4FF 35%, #ffffff 55%, #00D4FF 100%);
+            background-size: 250% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-            animation: textShimmer 4s linear infinite;
+            background-clip: text;
+            animation: shimmer 3.5s linear infinite;
+            text-decoration: none !important;
         }
         .spectra-logo-sub {
-            font-size: 0.6rem;
+            font-size: 0.58rem;
             color: #2A3A58;
-            letter-spacing: 2.5px;
+            letter-spacing: 3px;
             text-transform: uppercase;
-            margin-top: 0.1rem;
+            margin-top: 0.3rem;
+            text-decoration: none !important;
         }
-        /* Hide default sidebar nav page links */
+        /* Hide Streamlit default sidebar nav */
         section[data-testid="stSidebar"] [data-testid="stSidebarNav"],
         section[data-testid="stSidebar"] ul { display: none !important; }
-        /* Fix expander arrow_double text bug */
-        [data-testid="stExpanderToggleIcon"] { display: none !important; }
-        details summary::-webkit-details-marker { display: none; }
+        /* ── Nuclear fix for arrow_double bug on expander ── */
+        [data-testid="stExpanderToggleIcon"],
+        [data-testid="stExpanderToggleIcon"] * { display: none !important; }
+        details > summary > span:first-child { display: none !important; }
         </style>
         <a class="spectra-logo-btn" href="/" target="_self">
-            <div class="spectra-logo-text">⚡ SPECTRA </div>
-            <div class="spectra-logo-sub"></div>
+            <div class="spectra-logo-text">⚡ SPECTRA</div>
+            <div class="spectra-logo-sub">Intelligence System</div>
         </a>
         """, unsafe_allow_html=True)
 
@@ -104,7 +116,13 @@ def render_sidebar():
         """, unsafe_allow_html=True)
 
         # ── Quick Profile Form (always visible) ────────────────────────
-        with st.expander("📋 Quick Student Info", expanded=True):
+        st.markdown("""
+        <div style="font-size:0.75rem; font-weight:600; color:#4A5A7A;
+                    text-transform:uppercase; letter-spacing:1.5px; margin-bottom:0.6rem;">
+            📋 Quick Student Info
+        </div>
+        """, unsafe_allow_html=True)
+        if True:  # always open — no expander needed
             sb_name     = st.text_input("Name",       value=profile.get("name", ""), placeholder="Your name")
             sb_id       = st.text_input("Student ID", value=profile.get("student_id", ""), placeholder="e.g. CS2024001")
             sb_semester = st.selectbox("Current Semester", list(range(1, 9)),
