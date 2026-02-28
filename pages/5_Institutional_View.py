@@ -1,69 +1,207 @@
 """
-pages/1_Intelligence_Hub.py — Student Intelligence Hub
+pages/5_Institutional_View.py — College-Level Analytics Dashboard
 """
 import streamlit as st
 import pandas as pd
+import numpy as np
 from components.styles import load_css
 from components.sidebar import render_sidebar
 from components.navbar import render_navbar
-from components.cards import metric_card, career_card, section_title, glow_divider
-from components.charts import radar_chart, line_chart, gauge_chart
-from utils.career_engine import compute_intelligence_score, rank_careers
-from utils.ml_engine import predict_career_fit, predict_student_cluster, predict_cgpa_trajectory
-from utils.analytics_engine import benchmark_student, skill_gap_analysis, growth_timeline
-from utils.data_engine import get_feature_vector
+from components.cards import section_title, metric_card, glow_divider
+from components.charts import stacked_bar, line_chart, donut_chart
 
-st.set_page_config(page_title="SPECTRA — Intelligence Hub", page_icon="🎯", layout="wide")
+st.set_page_config(page_title="SPECTRA — Institutional View", page_icon="🏛️", layout="wide")
 load_css()
 render_sidebar()
-st.session_state["_current_page"] = "Intelligence Hub"
+st.session_state["_current_page"] = "Institutional View"
 render_navbar()
 
-profile  = st.session_state.get("student_profile", {})
+# ── Session state init ────────────────────────────────────────────────────
+if "show_upload_modal" not in st.session_state:
+    st.session_state["show_upload_modal"] = False
+if "inst_uploaded_file" not in st.session_state:
+    st.session_state["inst_uploaded_file"] = None
 
-# ── Run ML backend if profile has skills ──────────────────────────────────
-if profile and profile.get("skills") and not st.session_state.get("ml_ran"):
-    with st.spinner("🤖 Running AI analysis..."):
-        try:
-            ml_careers = predict_career_fit(profile)
-            st.session_state.ranked_careers     = ml_careers
-            st.session_state.top_career_fit     = ml_careers[0]["fit"] if ml_careers else 0
-            st.session_state.student_cluster    = predict_student_cluster(profile)
-            st.session_state.cgpa_trajectory    = predict_cgpa_trajectory(profile, 4)
-            st.session_state.ml_ran             = True
-        except Exception as e:
-            st.warning(f"ML engine fallback: {e}")
+import os
 
-ranked    = st.session_state.get("ranked_careers", [])
-cluster   = st.session_state.get("student_cluster", {})
-traj_data = st.session_state.get("cgpa_trajectory", [])
-intel    = st.session_state.get("intelligence_score", 0)
+# ── Upload dialog ─────────────────────────────────────────────────────────
+@st.dialog("📤 Upload Student Data")
+def upload_dialog():
+    st.markdown("""
+    <div style="margin-bottom:1rem;">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#E2E8F0; margin-bottom:0.3rem;">
+            Upload your filled SPECTRA template
+        </div>
+        <div style="font-size:0.82rem; color:#7A90B0; line-height:1.6;">
+            Accepted formats: <strong style="color:#00D4FF;">.xlsx</strong> or 
+            <strong style="color:#00D4FF;">.csv</strong> &nbsp;·&nbsp;
+            Max size: <strong style="color:#FFB800;">200 MB</strong> &nbsp;·&nbsp;
+            Use the official SPECTRA template for best results.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# ── Header ────────────────────────────────────────────────────────────────
-st.markdown(section_title("🎯", "Student Intelligence", "Hub"), unsafe_allow_html=True)
+    uploaded = st.file_uploader(
+        "Choose file",
+        type=["xlsx", "csv"],
+        label_visibility="collapsed",
+        help="Upload your filled SPECTRA Student Data Template (.xlsx or .csv)",
+        key="inst_upload_modal",
+    )
 
-if not profile:
-    st.warning("⚠️ No profile found. Please complete the Student Intake form first.")
-    if st.button("✏️ Go to Intake Form"):
-        st.switch_page("pages/0_Student_Intake.py")
-    st.stop()
+    if uploaded:
+        size_kb = round(uploaded.size / 1024, 1)
+        size_mb = round(uploaded.size / (1024 * 1024), 2)
+        display_size = f"{size_mb} MB" if size_mb >= 1 else f"{size_kb} KB"
 
-# ── KPI Row ───────────────────────────────────────────────────────────────
-skills   = profile.get("skills", {})
-cgpa     = profile.get("cgpa", 0)
-effort   = profile.get("effort", 3)
-projects = profile.get("projects", 0)
-top_fit  = ranked[0]["fit"] if ranked else 0
+        st.markdown(f"""
+        <div style="background:rgba(0,232,135,0.07); border:1px solid rgba(0,232,135,0.25);
+                    border-radius:12px; padding:1rem 1.2rem; margin:0.8rem 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                <div>
+                    <div style="font-weight:700; color:#E2E8F0; font-size:0.95rem;">
+                        ✅ {uploaded.name}
+                    </div>
+                    <div style="font-size:0.78rem; color:#7A90B0; margin-top:0.2rem;">
+                        Size: <strong style="color:#00E887;">{display_size}</strong> &nbsp;·&nbsp;
+                        Type: <strong style="color:#00D4FF;">{uploaded.type or uploaded.name.split(".")[-1].upper()}</strong>
+                    </div>
+                </div>
+                <span style="background:rgba(0,232,135,0.1); color:#00E887; border:1px solid rgba(0,232,135,0.3);
+                             padding:0.2rem 0.8rem; border-radius:50px; font-size:0.75rem; font-weight:600;">
+                    Ready to Process
+                </span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-skill_avg = round(sum(skills.values()) / len(skills)) if skills else 0
-consistency = skills.get("consistency", 0)
+        st.session_state["inst_uploaded_file"] = uploaded
+        st.session_state["inst_uploaded_name"] = uploaded.name
+        st.session_state["inst_uploaded_size"] = display_size
 
-c1, c2, c3, c4 = st.columns(4)
+    st.markdown('<div style="height:0.5rem;"></div>', unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("✅ Confirm Upload", use_container_width=True, type="primary",
+                     disabled=(uploaded is None)):
+            if uploaded:
+                st.session_state["show_upload_modal"] = False
+                st.rerun()
+    with c2:
+        if st.button("✖ Cancel", use_container_width=True):
+            st.session_state["show_upload_modal"] = False
+            st.rerun()
+
+# Trigger dialog if flagged
+if st.session_state.get("show_upload_modal"):
+    upload_dialog()
+    st.session_state["show_upload_modal"] = False
+
+# ── CSS for consistent button sizing ─────────────────────────────────────
+st.markdown("""
+<style>
+.inst-btn-row .stDownloadButton > button,
+.inst-btn-row .stButton > button,
+.inst-btn-row .stFileUploader > div > div > button {
+    height: 48px !important;
+    min-height: 48px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+}
+/* upload handled via dialog */
+</style>
+""", unsafe_allow_html=True)
+
+# ── Header row ────────────────────────────────────────────────────────────
+st.markdown(section_title("🏛️", "Institutional Intelligence", "Dashboard"), unsafe_allow_html=True)
+
+# ── Controls row: Institute selector + buttons ────────────────────────────
+st.markdown('<div class="inst-btn-row">', unsafe_allow_html=True)
+ctrl1, ctrl2, ctrl3, ctrl4 = st.columns([2, 1, 1, 1])
+
+with ctrl1:
+    institutes = [
+        "🏫 All Institutes (Aggregated)",
+        "🎓 IIT Kanpur",
+        "🎓 IIT Bombay",
+        "🎓 IIT Delhi",
+        "🎓 IIT Madras",
+        "🎓 NIT Trichy",
+        "🎓 NIT Warangal",
+        "🎓 BITS Pilani",
+        "🎓 VIT Vellore",
+        "🎓 COEP Pune",
+        "➕ Add New Institute...",
+    ]
+    selected_institute = st.selectbox(
+        "🏛️ Select Institute",
+        institutes,
+        index=0,
+        label_visibility="collapsed",
+        help="Filter dashboard by institute",
+    )
+    st.session_state["selected_institute"] = selected_institute
+
+with ctrl2:
+    template_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "assets", "SPECTRA_Student_Data_Template.xlsx"
+    )
+    if os.path.exists(template_path):
+        with open(template_path, "rb") as f:
+            template_bytes = f.read()
+        st.download_button(
+            label="📥 Download Format",
+            data=template_bytes,
+            file_name="SPECTRA_Student_Data_Template.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+            help="Download the Excel template to fill in student data",
+        )
+    else:
+        st.button("📥 Download Format", use_container_width=True, disabled=True)
+
+with ctrl3:
+    if st.button("📤 Upload Data", use_container_width=True,
+                 help="Upload your filled SPECTRA student data template"):
+        st.session_state["show_upload_modal"] = True
+
+with ctrl4:
+    if st.button("🔄 Refresh Data", use_container_width=True,
+                 help="Re-run analysis with latest data"):
+        st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Institute context banner
+inst_label = selected_institute.replace("🏫 ", "").replace("🎓 ", "")
+
+# ── Admin banner ──────────────────────────────────────────────────────────
+st.markdown("""
+<div class="glass-panel" style="margin-bottom:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+            <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#E2E8F0;">
+                📍 Institute Overview — Academic Year 2025–26
+            </div>
+            <div style="font-size:0.8rem; color:#7A90B0; margin-top:0.2rem;">
+                Aggregated analytics across all departments. Data refreshed every semester.
+            </div>
+        </div>
+        <span class="pill pill-amber">Admin View</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ── Top KPIs ──────────────────────────────────────────────────────────────
+k1, k2, k3, k4 = st.columns(4)
 kpis = [
-    (c1, "Academic Index",   f"{cgpa:.1f}/10",   "0.6 from last sem",       "up"),
-    (c2, "Skill Strength",   f"{skill_avg}%",     "Self-assessed average",    "neutral"),
-    (c3, "Intelligence Score",f"{intel}/100",      "Composite AI score",       "up"),
-    (c4, "Top Career Fit",   f"{top_fit}%",       f"{ranked[0]['title'] if ranked else '—'}", "up"),
+    (k1, "Total Students",        "2,847",  "↑ 8% from 2024",   "up"),
+    (k2, "Avg Intelligence Score","76.4",    "↑ 5.2 points",     "up"),
+    (k3, "At-Risk Students",      "342",     "↓ 12% from last sem","up"),
+    (k4, "Placement Rate",        "89%",     "↑ 4% from 2024",   "up"),
 ]
 for col, label, val, trend, tdir in kpis:
     with col:
@@ -71,70 +209,97 @@ for col, label, val, trend, tdir in kpis:
 
 st.markdown(glow_divider(), unsafe_allow_html=True)
 
-# ── Two-column layout ─────────────────────────────────────────────────────
-left, right = st.columns([1.4, 1])
+# ── Department analytics ───────────────────────────────────────────────────
+c1, c2 = st.columns(2)
 
-with left:
-    st.markdown("#### 📡 Multi-Dimensional Skill Radar")
-    categories = ["Technical", "Analytical", "Creative", "Leadership", "Communication", "Consistency"]
-    keys       = ["technical", "analytical", "creative", "leadership", "communication", "consistency"]
-    values     = [skills.get(k, 50) for k in keys]
-    st.plotly_chart(radar_chart(categories, values, profile.get("name", "Student")),
-                    use_container_width=True)
-
-with right:
-    st.markdown("#### 🔥 Top Career Matches")
-    for c in ranked[:4]:
-        st.markdown(career_card(c["title"], c["fit"], f"Demand: {c['demand']}"),
-                    unsafe_allow_html=True)
-
-st.markdown(glow_divider(), unsafe_allow_html=True)
-
-# ── Intelligence Score Gauge + Growth Projection ──────────────────────────
-g1, g2 = st.columns([1, 2])
-
-with g1:
-    st.markdown("#### 🧠 Intelligence Score")
-    st.plotly_chart(gauge_chart(intel, "Composite Score"), use_container_width=True)
-
-with g2:
-    st.markdown("#### 📈 Simulated Growth Trajectory")
-    # Generate a realistic synthetic trajectory based on profile
-    months = ["Aug", "Sep", "Oct", "Nov", "Dec", "Jan"]
-    base_academic = max(cgpa - 1.5, 5.0)
-    base_skill    = max(skill_avg - 20, 40)
-    base_effort   = effort * 10
-
-    trajectory = pd.DataFrame({
-        "Month":    months,
-        "Academic": [round(base_academic + i * 0.3, 1) for i in range(6)],
-        "Skills":   [round(base_skill    + i * 2.5, 1) for i in range(6)],
-        "Effort":   [round(base_effort   + i * 1.8, 1) for i in range(6)],
+with c1:
+    st.markdown("#### 🎓 Career Preferences by Department")
+    dept_df = pd.DataFrame({
+        "Department": ["CSE", "ECE", "ME", "Civil", "EE", "IT"],
+        "AI/ML":      [45, 28, 10,  6, 20, 38],
+        "Core":       [15, 42, 60, 68, 50, 20],
+        "Management": [25, 18, 22, 18, 20, 22],
+        "Research":   [15, 12,  8,  8, 10, 20],
     })
-    st.plotly_chart(line_chart(trajectory, "Month", ["Academic", "Skills", "Effort"],
-                               "Growth This Semester"),
-                    use_container_width=True)
+    st.plotly_chart(
+        stacked_bar(dept_df, "Department", ["AI/ML", "Core", "Management", "Research"],
+                    "Career Preference Distribution (%)"),
+        use_container_width=True
+    )
 
-# ── Skill Breakdown Table ─────────────────────────────────────────────────
+with c2:
+    st.markdown("#### 📊 Campus CGPA Distribution")
+    # Simulated normal distribution
+    np.random.seed(42)
+    cgpa_buckets = ["< 5.0", "5.0–6.0", "6.0–7.0", "7.0–8.0", "8.0–9.0", "9.0+"]
+    cgpa_counts  = [52, 180, 480, 920, 810, 405]
+    cgpa_df = pd.DataFrame({"CGPA Range": cgpa_buckets, "Students": cgpa_counts})
+
+    st.plotly_chart(
+        donut_chart(cgpa_buckets, cgpa_counts, "CGPA Distribution Across Campus"),
+        use_container_width=True
+    )
+
 st.markdown(glow_divider(), unsafe_allow_html=True)
-st.markdown("#### 🔢 Full Skill Breakdown")
 
-skill_display = {k.title(): v for k, v in skills.items()}
-skill_df = pd.DataFrame(
-    {"Skill": list(skill_display.keys()), "Score": list(skill_display.values())}
-).sort_values("Score", ascending=False)
+# ── Trend over semesters ───────────────────────────────────────────────────
+c3, c4 = st.columns(2)
 
-for _, row in skill_df.iterrows():
-    bar_color = "#00E887" if row["Score"] >= 75 else ("#FFB800" if row["Score"] >= 55 else "#FF4D6A")
-    st.markdown(f"""
-    <div class="skill-row">
-        <div class="skill-label">
-            <span>{row['Skill']}</span>
-            <span style="color:{bar_color};">{int(row['Score'])}/100</span>
-        </div>
-        <div class="skill-bar-bg">
-            <div class="skill-bar-fill" style="width:{row['Score']}%;
-                 background:linear-gradient(90deg, {bar_color}, {bar_color}88);"></div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+with c3:
+    st.markdown("#### 📈 Intelligence Score Trend (Semester-wise)")
+    semester_df = pd.DataFrame({
+        "Semester": ["Sem 1", "Sem 2", "Sem 3", "Sem 4", "Sem 5", "Sem 6"],
+        "Avg Intelligence": [68.2, 70.5, 71.8, 73.4, 75.1, 76.4],
+        "Avg Career Fit":   [55.0, 58.3, 61.2, 64.8, 68.5, 71.2],
+        "At-Risk %":        [18.0, 16.5, 15.8, 14.2, 13.5, 12.0],
+    })
+    st.plotly_chart(
+        line_chart(semester_df, "Semester",
+                   ["Avg Intelligence", "Avg Career Fit"],
+                   "Campus Intelligence & Career Fit Trend"),
+        use_container_width=True
+    )
+
+with c4:
+    st.markdown("#### ⚠️ At-Risk Breakdown")
+    risk_categories = ["Academic Risk", "Misalignment Risk", "Engagement Risk", "On Track"]
+    risk_values     = [180, 95, 67, 2505]
+    st.plotly_chart(
+        donut_chart(risk_categories, risk_values, "Student Risk Distribution"),
+        use_container_width=True
+    )
+
+st.markdown(glow_divider(), unsafe_allow_html=True)
+
+# ── Department table ───────────────────────────────────────────────────────
+st.markdown("#### 🗂️ Department Performance Summary")
+
+dept_summary = pd.DataFrame({
+    "Department":       ["Computer Science", "Electronics", "Mechanical", "Civil", "Electrical", "IT"],
+    "Students":         [640, 520, 480, 380, 410, 417],
+    "Avg CGPA":         [8.1, 7.9, 7.4, 7.2, 7.6, 8.0],
+    "Avg Career Fit %": [78, 72, 61, 58, 65, 76],
+    "At-Risk Count":    [48, 62, 95, 88, 71, 78],
+    "Top Career":       ["AI/ML", "Embedded", "Core Engg", "Core Engg", "Power", "Data Science"],
+})
+
+st.dataframe(
+    dept_summary.style
+        .background_gradient(subset=["Avg CGPA", "Avg Career Fit %"], cmap="Blues")
+        .highlight_max(subset=["Avg CGPA", "Avg Career Fit %"], color="#00E88722")
+        .highlight_min(subset=["At-Risk Count"], color="#00E88722"),
+    use_container_width=True,
+    hide_index=True,
+)
+
+st.markdown(glow_divider(), unsafe_allow_html=True)
+
+# ── Downloadable summary ───────────────────────────────────────────────────
+csv = dept_summary.to_csv(index=False)
+st.download_button(
+    "📥 Download Department Report (CSV)",
+    data=csv,
+    file_name="spectra_institutional_report.csv",
+    mime="text/csv",
+    use_container_width=False,
+)
