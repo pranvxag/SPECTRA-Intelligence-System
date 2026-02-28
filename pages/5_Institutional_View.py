@@ -16,7 +16,167 @@ render_sidebar()
 st.session_state["_current_page"] = "Institutional View"
 render_navbar()
 
+# ── Session state init ────────────────────────────────────────────────────
+if "show_upload_modal" not in st.session_state:
+    st.session_state["show_upload_modal"] = False
+if "inst_uploaded_file" not in st.session_state:
+    st.session_state["inst_uploaded_file"] = None
+
+import os
+
+# ── Upload dialog ─────────────────────────────────────────────────────────
+@st.dialog("📤 Upload Student Data")
+def upload_dialog():
+    st.markdown("""
+    <div style="margin-bottom:1rem;">
+        <div style="font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:#E2E8F0; margin-bottom:0.3rem;">
+            Upload your filled SPECTRA template
+        </div>
+        <div style="font-size:0.82rem; color:#7A90B0; line-height:1.6;">
+            Accepted formats: <strong style="color:#00D4FF;">.xlsx</strong> or 
+            <strong style="color:#00D4FF;">.csv</strong> &nbsp;·&nbsp;
+            Max size: <strong style="color:#FFB800;">200 MB</strong> &nbsp;·&nbsp;
+            Use the official SPECTRA template for best results.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    uploaded = st.file_uploader(
+        "Choose file",
+        type=["xlsx", "csv"],
+        label_visibility="collapsed",
+        help="Upload your filled SPECTRA Student Data Template (.xlsx or .csv)",
+        key="inst_upload_modal",
+    )
+
+    if uploaded:
+        size_kb = round(uploaded.size / 1024, 1)
+        size_mb = round(uploaded.size / (1024 * 1024), 2)
+        display_size = f"{size_mb} MB" if size_mb >= 1 else f"{size_kb} KB"
+
+        st.markdown(f"""
+        <div style="background:rgba(0,232,135,0.07); border:1px solid rgba(0,232,135,0.25);
+                    border-radius:12px; padding:1rem 1.2rem; margin:0.8rem 0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                <div>
+                    <div style="font-weight:700; color:#E2E8F0; font-size:0.95rem;">
+                        ✅ {uploaded.name}
+                    </div>
+                    <div style="font-size:0.78rem; color:#7A90B0; margin-top:0.2rem;">
+                        Size: <strong style="color:#00E887;">{display_size}</strong> &nbsp;·&nbsp;
+                        Type: <strong style="color:#00D4FF;">{uploaded.type or uploaded.name.split(".")[-1].upper()}</strong>
+                    </div>
+                </div>
+                <span style="background:rgba(0,232,135,0.1); color:#00E887; border:1px solid rgba(0,232,135,0.3);
+                             padding:0.2rem 0.8rem; border-radius:50px; font-size:0.75rem; font-weight:600;">
+                    Ready to Process
+                </span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.session_state["inst_uploaded_file"] = uploaded
+        st.session_state["inst_uploaded_name"] = uploaded.name
+        st.session_state["inst_uploaded_size"] = display_size
+
+    st.markdown('<div style="height:0.5rem;"></div>', unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1:
+        if st.button("✅ Confirm Upload", use_container_width=True, type="primary",
+                     disabled=(uploaded is None)):
+            if uploaded:
+                st.session_state["show_upload_modal"] = False
+                st.rerun()
+    with c2:
+        if st.button("✖ Cancel", use_container_width=True):
+            st.session_state["show_upload_modal"] = False
+            st.rerun()
+
+# Trigger dialog if flagged
+if st.session_state.get("show_upload_modal"):
+    upload_dialog()
+    st.session_state["show_upload_modal"] = False
+
+# ── CSS for consistent button sizing ─────────────────────────────────────
+st.markdown("""
+<style>
+.inst-btn-row .stDownloadButton > button,
+.inst-btn-row .stButton > button,
+.inst-btn-row .stFileUploader > div > div > button {
+    height: 48px !important;
+    min-height: 48px !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    border-radius: 12px !important;
+    width: 100% !important;
+}
+/* upload handled via dialog */
+</style>
+""", unsafe_allow_html=True)
+
+# ── Header row ────────────────────────────────────────────────────────────
 st.markdown(section_title("🏛️", "Institutional Intelligence", "Dashboard"), unsafe_allow_html=True)
+
+# ── Controls row: Institute selector + buttons ────────────────────────────
+st.markdown('<div class="inst-btn-row">', unsafe_allow_html=True)
+ctrl1, ctrl2, ctrl3, ctrl4 = st.columns([2, 1, 1, 1])
+
+with ctrl1:
+    institutes = [
+        "🏫 All Institutes (Aggregated)",
+        "🎓 IIT Kanpur",
+        "🎓 IIT Bombay",
+        "🎓 IIT Delhi",
+        "🎓 IIT Madras",
+        "🎓 NIT Trichy",
+        "🎓 NIT Warangal",
+        "🎓 BITS Pilani",
+        "🎓 VIT Vellore",
+        "🎓 COEP Pune",
+        "➕ Add New Institute...",
+    ]
+    selected_institute = st.selectbox(
+        "🏛️ Select Institute",
+        institutes,
+        index=0,
+        label_visibility="collapsed",
+        help="Filter dashboard by institute",
+    )
+    st.session_state["selected_institute"] = selected_institute
+
+with ctrl2:
+    template_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "assets", "SPECTRA_Student_Data_Template.xlsx"
+    )
+    if os.path.exists(template_path):
+        with open(template_path, "rb") as f:
+            template_bytes = f.read()
+        st.download_button(
+            label="📥 Download Format",
+            data=template_bytes,
+            file_name="SPECTRA_Student_Data_Template.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+            help="Download the Excel template to fill in student data",
+        )
+    else:
+        st.button("📥 Download Format", use_container_width=True, disabled=True)
+
+with ctrl3:
+    if st.button("📤 Upload Data", use_container_width=True,
+                 help="Upload your filled SPECTRA student data template"):
+        st.session_state["show_upload_modal"] = True
+
+with ctrl4:
+    if st.button("🔄 Refresh Data", use_container_width=True,
+                 help="Re-run analysis with latest data"):
+        st.rerun()
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Institute context banner
+inst_label = selected_institute.replace("🏫 ", "").replace("🎓 ", "")
 
 # ── Admin banner ──────────────────────────────────────────────────────────
 st.markdown("""
