@@ -6,6 +6,10 @@ from components.styles import load_css
 from components.sidebar import render_sidebar
 from components.cards import section_title, swot_card, roadmap_card, glow_divider, metric_card
 from utils.career_engine import generate_swot, rank_careers
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 st.set_page_config(page_title="SPECTRA — SWOT Analysis", page_icon="📊", layout="wide")
 load_css()
