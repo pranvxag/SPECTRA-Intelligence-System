@@ -50,32 +50,49 @@ def render_navbar():
 
     current = st.session_state.get("_current_page", "")
 
-    pages = [
+    row1 = [
         ("🎯", "Intelligence Hub",   "pages/1_Intelligence_Hub.py"),
         ("🗺️", "Career Mapper",      "pages/2_Career_Mapper.py"),
         ("📊", "SWOT Analysis",      "pages/3_SWOT_Analysis.py"),
         ("📈", "Growth Tracker",     "pages/4_Growth_Tracker.py"),
         ("🏛️", "Institutional",      "pages/5_Institutional_View.py"),
+    ]
+
+    row2 = [
         ("🤖", "Ask SPECTRA",        "pages/7_Ask_Spectra.py"),
+        ("📄", "Resume Reviewer",    "pages/8_Resume_Reviewer.py"),
         ("❓", "About",              "pages/6_About.py"),
     ]
 
-    cols = st.columns(len(pages) + 1)
-
-    for i, (icon, label, path) in enumerate(pages):
-        with cols[i]:
+    # ── Row 1: Core Analysis Pages ─────────────────────────────────
+    cols1 = st.columns(len(row1) + 1)
+    for i, (icon, label, path) in enumerate(row1):
+        with cols1[i]:
             is_active = current == label
             if st.button(
                 f"{icon} {label}",
-                key=f"nav_top_{label}",
+                key=f"nav_r1_{label}",
                 type="primary" if is_active else "secondary",
                 use_container_width=True,
             ):
                 st.switch_page(path)
-
-    with cols[-1]:
+    with cols1[-1]:
         if st.button("🚀 ANALYZE ME", key="nav_analyze", type="primary", use_container_width=True):
             st.switch_page("pages/0_Student_Intake.py")
+
+    # ── Row 2: AI Tools ────────────────────────────────────────────
+    st.markdown("<div style='height:0.3rem;'></div>", unsafe_allow_html=True)
+    cols2 = st.columns(len(row2) + 2)   # pad with empty cols to keep buttons small
+    for i, (icon, label, path) in enumerate(row2):
+        with cols2[i]:
+            is_active = current == label
+            if st.button(
+                f"{icon} {label}",
+                key=f"nav_r2_{label}",
+                type="primary" if is_active else "secondary",
+                use_container_width=True,
+            ):
+                st.switch_page(path)
 
     # Thin cyan divider line under nav
     st.markdown('<div class="glow-divider"></div>', unsafe_allow_html=True)

@@ -54,28 +54,41 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ── Navigation Row ─────────────────────────────────────────────────────────
-pages = [
+home_row1 = [
     ("🎯", "Intelligence Hub",   "pages/1_Intelligence_Hub.py"),
     ("🗺️", "Career Mapper",      "pages/2_Career_Mapper.py"),
     ("📊", "SWOT Analysis",      "pages/3_SWOT_Analysis.py"),
     ("📈", "Growth Tracker",     "pages/4_Growth_Tracker.py"),
     ("🏛️", "Institutional View", "pages/5_Institutional_View.py"),
+]
+
+home_row2 = [
     ("🤖", "Ask SPECTRA",        "pages/7_Ask_Spectra.py"),
+    ("📄", "Resume Reviewer",    "pages/8_Resume_Reviewer.py"),
     ("❓", "About",              "pages/6_About.py"),
 ]
 
-cols = st.columns(len(pages) + 1)
-for i, (icon, label, path) in enumerate(pages):
-    with cols[i]:
-        if st.button(f"{icon} {label}", use_container_width=True, key=f"nav_{i}"):
+# Row 1 — core pages + CTA
+cols1 = st.columns(len(home_row1) + 1)
+for i, (icon, label, path) in enumerate(home_row1):
+    with cols1[i]:
+        if st.button(f"{icon} {label}", use_container_width=True, key=f"hnav1_{i}"):
             st.switch_page(path)
-
-with cols[-1]:
+with cols1[-1]:
     if st.button("🚀 ANALYZE ME", use_container_width=True, type="primary", key="cta"):
         st.switch_page("pages/0_Student_Intake.py")
 
+# Row 2 — AI tools
+st.markdown("<div style='height:0.3rem;'></div>", unsafe_allow_html=True)
+cols2 = st.columns(len(home_row2) + 2)   # extra cols to keep buttons compact
+for i, (icon, label, path) in enumerate(home_row2):
+    with cols2[i]:
+        if st.button(f"{icon} {label}", use_container_width=True, key=f"hnav2_{i}"):
+            st.switch_page(path)
+
 # ── Divider ────────────────────────────────────────────────────────────────
 st.markdown('<div class="glow-divider"></div>', unsafe_allow_html=True)
+
 
 # ── Platform Overview ──────────────────────────────────────────────────────
 st.markdown("""
