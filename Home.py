@@ -3,6 +3,9 @@ Home.py — SPECTRA Entry Point
 Renders the landing page with hero, nav, and quick overview.
 """
 import streamlit as st
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from utils.database import db
 from components.styles import load_css
 from components.sidebar import render_sidebar
 
@@ -14,6 +17,25 @@ st.set_page_config(
 )
 
 load_css()
+
+# ── Restore last session from DB on refresh ───────────────────────────────
+if "student_profile" not in st.session_state:
+    try:
+        all_students = db.get_all_students()
+        if all_students:
+            sid  = all_students[0]["student_id"]
+            full = db.get_student(sid)
+            if full:
+                st.session_state.student_profile    = full
+                cached = db.get_student_career_results(sid)
+                if cached:
+                    st.session_state.ranked_careers = cached
+                    st.session_state.top_career_fit = cached[0]["fit"]
+                st.session_state.intelligence_score = full.get("intelligence_score", 0)
+                st.session_state.ml_ran             = True
+    except Exception:
+        pass
+
 render_sidebar()
 
 # ── Session state defaults ─────────────────────────────────────────────────

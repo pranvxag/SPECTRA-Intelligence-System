@@ -29,6 +29,7 @@ from utils.data_engine import load_file, validate, preprocess
 from utils.ml_engine import batch_analyse, train_all_models
 from utils.analytics_engine import compute_cohort_stats, department_report
 from utils.report_generator import generate_batch_csv
+from utils.database import db
 
 # ── Upload dialog ─────────────────────────────────────────────────────────
 @st.dialog("📤 Upload Student Data")
@@ -116,7 +117,20 @@ def upload_dialog():
                             st.session_state["dept_report"]      = dept_report
                             st.session_state["student_db_live"]  = df_clean.to_dict("records")
                             st.session_state["show_upload_modal"] = False
-                            st.success(f"✅ Analysed {len(df_clean)} students!")
+                            # ── Persist to SQLite ──────────────────────────────
+                            try:
+                                from utils.data_engine import df_to_profile
+                                from utils.ml_engine import predict_career_fit, predict_student_cluster
+                                for _, row in df_clean.iterrows():
+                                    p = df_to_profile(row)
+                                    c = predict_career_fit(p)
+                                    cl = predict_student_cluster(p)
+                                    db.save_student(p, c, cl)
+                                db.save_batch(df_clean, cohort_stats, dept_report,
+                                              institute=selected_institute)
+                            except Exception as _e:
+                                pass
+                            st.success(f"✅ Analysed {len(df_clean)} students & saved to database!")
                             st.rerun()
     with c2:
         if st.button("✖ Cancel", use_container_width=True):

@@ -9,6 +9,7 @@ from components.navbar import render_navbar
 from components.cards import metric_card, career_card, section_title, glow_divider
 from components.charts import radar_chart, line_chart, gauge_chart
 from utils.career_engine import compute_intelligence_score, rank_careers
+from utils.database import db
 from utils.ml_engine import predict_career_fit, predict_student_cluster, predict_cgpa_trajectory
 from utils.analytics_engine import benchmark_student, skill_gap_analysis, growth_timeline
 from utils.data_engine import get_feature_vector
@@ -18,6 +19,22 @@ load_css()
 render_sidebar()
 st.session_state["_current_page"] = "Intelligence Hub"
 render_navbar()
+
+# ── Restore session from DB on refresh ───────────────────────────────────
+if "student_profile" not in st.session_state or not st.session_state.get("student_profile"):
+    # Try to load the most recently analysed student from DB
+    all_students = db.get_all_students()
+    if all_students:
+        sid = all_students[0]["student_id"]
+        full = db.get_student(sid)
+        if full:
+            st.session_state.student_profile = full
+            cached = db.get_student_career_results(sid)
+            if cached:
+                st.session_state.ranked_careers = cached
+                st.session_state.top_career_fit = cached[0]["fit"]
+            st.session_state.intelligence_score = full.get("intelligence_score", 0)
+            st.session_state.ml_ran = True
 
 profile  = st.session_state.get("student_profile", {})
 

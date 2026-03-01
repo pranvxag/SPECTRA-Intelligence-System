@@ -2,6 +2,9 @@
 pages/4_Growth_Tracker.py — Growth Analytics & Predictions
 """
 import streamlit as st
+from utils.analytics_engine import growth_timeline
+from utils.ml_engine import predict_cgpa_trajectory
+from utils.database import db
 import pandas as pd
 import numpy as np
 from components.styles import load_css
@@ -17,6 +20,14 @@ st.session_state["_current_page"] = "Growth Tracker"
 render_navbar()
 
 profile = st.session_state.get("student_profile", {})
+
+# ── Real trajectory data from analytics engine ────────────────────────────
+if profile:
+    timeline_data = growth_timeline(profile)
+    trajectory    = predict_cgpa_trajectory(profile, semesters=4)
+else:
+    timeline_data = {}
+    trajectory    = []
 
 st.markdown(section_title("📈", "Growth Tracker", "& Progress Analytics"), unsafe_allow_html=True)
 

@@ -5,6 +5,7 @@ Always shows: quick profile form + live intelligence stats + quick actions
 import streamlit as st
 from components.styles import load_css
 from utils.career_engine import compute_intelligence_score, rank_careers
+from utils.database import db
 
 
 def render_sidebar():
@@ -117,32 +118,22 @@ def render_sidebar():
         </div>
         """, unsafe_allow_html=True)
 
-        # ── Mock student database for suggestions ──────────────────────
-        # In production, load from real DB / uploaded CSV
-        STUDENT_DB = [
-            {"name": "Priya Sharma",   "student_id": "CS2024001", "college": "IIT Kanpur",  "cgpa": 8.2, "branch": "Computer Science"},
-            {"name": "Rohan Mehta",    "student_id": "EC2024042", "college": "NIT Trichy",   "cgpa": 7.5, "branch": "Electronics"},
-            {"name": "Ananya Patel",   "student_id": "ME2024088", "college": "BITS Pilani",  "cgpa": 8.8, "branch": "Mechanical"},
-            {"name": "Arjun Singh",    "student_id": "CS2024010", "college": "IIT Bombay",   "cgpa": 9.1, "branch": "Computer Science"},
-            {"name": "Sneha Iyer",     "student_id": "IT2024033", "college": "VIT Vellore",  "cgpa": 7.9, "branch": "IT"},
-            {"name": "Kiran Desai",    "student_id": "EE2024055", "college": "IIT Delhi",    "cgpa": 8.5, "branch": "Electrical"},
-            {"name": "Meera Nair",     "student_id": "CS2024022", "college": "NIT Warangal", "cgpa": 8.0, "branch": "Computer Science"},
-            {"name": "Vikram Reddy",   "student_id": "ME2024071", "college": "COEP Pune",    "cgpa": 7.2, "branch": "Mechanical"},
-        ]
-        # Also include the currently loaded profile if any
-        if profile and profile.get("name") and not any(
-            s["student_id"] == profile.get("student_id") for s in STUDENT_DB
-        ):
-            STUDENT_DB.insert(0, {
-                "name":       profile.get("name", ""),
-                "student_id": profile.get("student_id", ""),
-                "college":    profile.get("college", ""),
-                "cgpa":       profile.get("cgpa", 0),
-                "branch":     profile.get("branch", ""),
-            })
+        # ── Live student DB from SQLite ─────────────────────────────────
+        STUDENT_DB = db.get_all_students()
 
-        all_names = [s["name"] for s in STUDENT_DB]
-        all_ids   = [s["student_id"] for s in STUDENT_DB]
+        # If no students in DB yet, show placeholder
+        if not STUDENT_DB:
+            st.markdown("""
+            <div style="background:rgba(255,184,0,0.07); border:1px solid rgba(255,184,0,0.2);
+                        border-radius:10px; padding:0.7rem; margin-bottom:0.8rem; font-size:0.78rem; color:#FFB800;">
+                ⚠️ No students in database yet.<br>
+                Upload data via <strong>Institutional View → Upload Data</strong>
+                or fill the intake form.
+            </div>
+            """, unsafe_allow_html=True)
+
+        all_names = [s.get("name","") for s in STUDENT_DB]
+        all_ids   = [s.get("student_id","") for s in STUDENT_DB]
 
         # ── Search fields ──────────────────────────────────────────────
         st.markdown("""
@@ -164,7 +155,7 @@ def render_sidebar():
         )
 
         # Auto-fill ID and college from name selection
-        matched = next((s for s in STUDENT_DB if s["name"] == sb_name), None)
+        matched = next((s for s in STUDENT_DB if s.get("name") == sb_name), None)
 
         # Student ID autocomplete (auto-filled if name matched)
         sb_id = st.selectbox(
@@ -178,12 +169,12 @@ def render_sidebar():
 
         # If ID selected directly, override match
         if sb_id and not matched:
-            matched = next((s for s in STUDENT_DB if s["student_id"] == sb_id), None)
+            matched = next((s for s in STUDENT_DB if s.get("student_id") == sb_id), None)
 
         # College (auto-filled, editable)
         colleges = ["","IIT Kanpur","IIT Bombay","IIT Delhi","IIT Madras",
                     "NIT Trichy","NIT Warangal","BITS Pilani","VIT Vellore","COEP Pune","Other"]
-        auto_college = matched["college"] if matched else (profile.get("college","") if profile else "")
+        auto_college = matched.get("college","") if matched else (profile.get("college","") if profile else "")
         col_index = colleges.index(auto_college) if auto_college in colleges else 0
         sb_college = st.selectbox("College / Institute", colleges,
                                   index=col_index,
@@ -208,23 +199,30 @@ def render_sidebar():
 
         if st.button("🔍 Analyse This Student", use_container_width=True, type="primary"):
             if matched:
-                # Load matched student into session (merge with any existing full profile)
-                updated = {**profile, **matched,
-                           "college": sb_college or matched.get("college",""),
-                           "name": matched["name"],
-                           "student_id": matched["student_id"]}
-                st.session_state.student_profile = updated
-                if updated.get("skills"):
-                    ranked_new = rank_careers(updated)
-                    st.session_state.ranked_careers     = ranked_new
-                    st.session_state.top_career_fit     = ranked_new[0]["fit"] if ranked_new else 0
-                    st.session_state.intelligence_score = compute_intelligence_score(updated)
-                st.success(f"✅ Loaded: {matched['name']}")
+                # Load full profile from DB (has all skills, interests etc.)
+                sid = matched.get("student_id","")
+                full = db.get_student(sid) if sid else None
+                if full:
+                    st.session_state.student_profile    = full
+                    # Load cached career results
+                    cached_careers = db.get_student_career_results(sid)
+                    if cached_careers:
+                        st.session_state.ranked_careers  = cached_careers
+                        st.session_state.top_career_fit  = cached_careers[0]["fit"]
+                    st.session_state.intelligence_score  = full.get("intelligence_score", 0)
+                    st.session_state.ml_ran              = True  # skip re-analysis
+                    st.success(f"✅ Loaded: {full['name']}")
+                else:
+                    # Partial profile from DB row
+                    updated = {**profile, **matched}
+                    st.session_state.student_profile = updated
+                    st.session_state.ml_ran = False
+                    st.info(f"⚡ Loaded {matched['name']} — run full intake for complete analysis")
                 st.rerun()
             elif sb_name or sb_id:
                 st.warning("⚠️ No match found. Build a new profile below.")
             else:
-                st.warning("⚠️ Please select a name or ID first.")
+                st.warning("⚠️ Select a name or ID first.")
 
         st.markdown("<div style='height:0.3rem;'></div>", unsafe_allow_html=True)
 

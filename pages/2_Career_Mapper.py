@@ -8,6 +8,9 @@ from components.sidebar import render_sidebar
 from components.navbar import render_navbar
 from components.cards import section_title, skill_bar, formula_box, glow_divider, pill
 from components.charts import scatter_bubble, donut_chart
+from utils.ml_engine import predict_career_fit, predict_student_cluster
+from utils.analytics_engine import skill_gap_analysis
+from utils.database import db
 from utils.career_engine import rank_careers, CAREERS
 
 st.set_page_config(page_title="SPECTRA — Career Mapper", page_icon="🗺️", layout="wide")

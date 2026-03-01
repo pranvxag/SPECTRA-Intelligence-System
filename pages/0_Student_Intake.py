@@ -3,6 +3,8 @@ pages/0_Student_Intake.py — Student Profile Intake Form
 Collects real data that powers all other modules.
 """
 import streamlit as st
+from utils.database import db
+from utils.ml_engine import predict_career_fit, predict_student_cluster
 from components.styles import load_css
 from components.sidebar import render_sidebar
 from components.navbar import render_navbar

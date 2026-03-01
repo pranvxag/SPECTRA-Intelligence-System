@@ -7,6 +7,9 @@ from components.sidebar import render_sidebar
 from components.navbar import render_navbar
 from components.cards import section_title, swot_card, roadmap_card, glow_divider, metric_card
 from utils.career_engine import generate_swot, rank_careers
+from utils.analytics_engine import compute_swot, skill_gap_analysis
+from utils.database import db
+from utils.report_generator import generate_student_excel, generate_profile_json
 
 st.set_page_config(page_title="SPECTRA — SWOT Analysis", page_icon="📊", layout="wide")
 load_css()
@@ -26,7 +29,17 @@ if not profile:
     st.stop()
 
 top_career = ranked[0] if ranked else {"title": "AI/ML Engineer", "fit": 0}
-swot = generate_swot(profile, top_career)
+top_career_fit = top_career.get("fit", 0) if isinstance(top_career, dict) else 0
+
+# Try cached SWOT from DB first
+swot = db.get_swot(profile.get("student_id",""))
+if not swot:
+    swot = compute_swot(profile, top_career_fit)
+    db.save_swot(profile.get("student_id",""), swot)
+
+# Skill gap analysis
+target_career_title = top_career.get("title","AI / ML Engineer") if isinstance(top_career, dict) else "Software Engineer"
+skill_gap = skill_gap_analysis(profile, target_career_title)
 
 # ── Student context banner ────────────────────────────────────────────────
 name   = profile.get("name", "Student")
