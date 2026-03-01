@@ -19,47 +19,51 @@ render_navbar()
 st.markdown(section_title("🤖", "Ask SPECTRA", "Your Personal AI Career Coach"), unsafe_allow_html=True)
 st.markdown("""
 <div style="font-size:0.9rem; color:#7A90B0; margin-bottom: 1.5rem;">
-    SPECTRA uses Google's Gemini 1.5 Flash (Free Tier) to answer your questions, analyze your profile, and give you actionable career advice.
+    SPECTRA uses Groq (LLaMA-3) or Google's Gemini to answer your questions, analyze your profile, and give you actionable career advice.
 </div>
 """, unsafe_allow_html=True)
 
 # ── API Key Setup ──────────────────────────────────────────────────────────
-api_key = ""
-try:
-    api_key = st.secrets["GEMINI_API_KEY"]
-except (KeyError, FileNotFoundError):
-    pass
+# Check secrets first
+gemini_key = st.secrets.get("GEMINI_API_KEY") or st.session_state.get("gemini_key")
+groq_key = st.secrets.get("GROQ_API_KEY") or st.session_state.get("groq_key")
 
-if not api_key:
-    if "gemini_key" in st.session_state:
-        api_key = st.session_state["gemini_key"]
-
-if not api_key:
+if not gemini_key and not groq_key:
     st.markdown("""
-    <div style="background:rgba(255,184,0,0.07); border:1px solid rgba(255,184,0,0.2);
+    <div style="background:rgba(0,212,255,0.07); border:1px solid rgba(0,212,255,0.2);
                 border-radius:10px; padding:1.2rem; margin-bottom:1rem;">
-        <h4 style="color:#FFB800; margin-top:0;">🔑 Gemini API Key Required</h4>
+        <h4 style="color:#00D4FF; margin-top:0;">🔑 AI Engine Key Required</h4>
         <div style="font-size:0.9rem; color:#E2E8F0; line-height:1.6;">
-            To use the AI Coach, you need a free Google Gemini API Key.<br>
-            <strong>Good news: It's 100% Free for educational and personal use!</strong><br><br>
-            1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#00D4FF;">Google AI Studio</a> and sign in with your Google account.<br>
-            2. Click <strong>Create API Key</strong>.<br>
-            3. Paste it below (it will only be stored securely in your temporary browser session).
+            To use the AI Coach, you need an API Key from either <b>Groq</b> or <b>Google Gemini</b>.<br><br>
+            <b>Option A: Groq (Recommended - Fast)</b><br>
+            1. Go to <a href="https://console.groq.com/keys" target="_blank" style="color:#00D4FF;">Groq Console</a>.<br>
+            2. Create a key and paste it below.<br><br>
+            <b>Option B: Google Gemini (Free)</b><br>
+            1. Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#00D4FF;">Google AI Studio</a>.<br>
+            2. Create a key and paste it below.
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    user_key = st.text_input("Enter your Gemini API Key:", type="password")
-    if user_key:
-        st.session_state["gemini_key"] = user_key
-        st.rerun()
+    col1, col2 = st.columns(2)
+    with col1:
+        u_groq = st.text_input("Enter Groq API Key:", type="password", placeholder="gsk_...")
+        if u_groq:
+            st.session_state["groq_key"] = u_groq
+            st.rerun()
+    with col2:
+        u_gem = st.text_input("Enter Gemini API Key:", type="password", placeholder="AIza...")
+        if u_gem:
+            st.session_state["gemini_key"] = u_gem
+            st.rerun()
     st.stop()
 else:
-    try:
-        init_gemini(api_key)
-    except Exception as e:
-        st.error(f"Failed to initialize Gemini: {e}")
-        st.stop()
+    # Initialize if Gemini is the only thing we have
+    if gemini_key and not groq_key:
+        try:
+            init_gemini(gemini_key)
+        except Exception as e:
+            st.error(f"Failed to initialize Gemini: {e}")
 
 # ── Profile Check ──────────────────────────────────────────────────────────
 profile = st.session_state.get("student_profile", {})
@@ -75,33 +79,22 @@ top_career = ranked_careers[0]["title"] if ranked_careers else "Unknown"
 
 # ── Chat Interface ─────────────────────────────────────────────────────────
 
-# Initialize chat history
 if "spectra_messages" not in st.session_state:
     st.session_state.spectra_messages = [
-        {"role": "assistant", "content": f"Hi {profile.get('name', 'there')}! I'm SPECTRA, your AI career coach. Based on your profile, your top career match is **{top_career}**. How can I help you achieve your goals today?"}
+        {"role": "assistant", "content": f"Hi {profile.get('name', 'there')}! I'm SPECTRA, your AI career coach powered by **{'Groq' if groq_key else 'Gemini'}**. How can I help you today?"}
     ]
 
-# Display chat messages from history on app rerun
 for message in st.session_state.spectra_messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# React to user input
 if prompt := st.chat_input("Ask SPECTRA about your career, resume, or skills..."):
-    # Display user message in chat message container
     st.chat_message("user").markdown(prompt)
     
-    # Get response from Gemini
     with st.spinner("SPECTRA is thinking..."):
-        # We pass history EXCLUDING the new prompt
         response_text = get_coach_response(prompt, st.session_state.spectra_messages, profile, intel_score, top_career)
         
-    # Add user message to state
     st.session_state.spectra_messages.append({"role": "user", "content": prompt})
-
-    # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response_text)
-    
-    # Add assistant response to chat history
     st.session_state.spectra_messages.append({"role": "assistant", "content": response_text})

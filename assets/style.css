@@ -7,23 +7,47 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 /* ── Reset & Base ── */
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
-html, body, .stApp {
+html,
+body,
+.stApp {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: #080C14 !important;
     color: #E2E8F0;
 }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #0D1117; }
-::-webkit-scrollbar-thumb { background: #00D4FF33; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #00D4FF66; }
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0D1117;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00D4FF33;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #00D4FF66;
+}
 
 /* ── Hide Streamlit chrome ── */
-#MainMenu, footer, header { visibility: hidden; }
-.block-container { padding-top: 1rem !important; max-width: 1400px; }
+#MainMenu,
+footer,
+header {
+    visibility: hidden;
+}
+
+.block-container {
+    padding-top: 1rem !important;
+    max-width: 1400px;
+}
 
 /* ── LOCK SIDEBAR OPEN — hide collapse/expand controls ── */
 [data-testid="stSidebarCollapseButton"],
@@ -78,9 +102,11 @@ section[data-testid="stSidebar"] {
 .spectra-hero::before {
     content: '';
     position: absolute;
-    top: -60px; left: 50%;
+    top: -60px;
+    left: 50%;
     transform: translateX(-50%);
-    width: 500px; height: 200px;
+    width: 500px;
+    height: 200px;
     background: radial-gradient(ellipse, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
     pointer-events: none;
 }
@@ -88,8 +114,10 @@ section[data-testid="stSidebar"] {
 .spectra-hero::after {
     content: '';
     position: absolute;
-    bottom: -40px; right: -40px;
-    width: 200px; height: 200px;
+    bottom: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
     background: radial-gradient(ellipse, rgba(255, 184, 0, 0.08) 0%, transparent 70%);
     pointer-events: none;
 }
@@ -143,7 +171,7 @@ section[data-testid="stSidebar"] {
 }
 
 /* Override Streamlit button styles inside nav */
-div[data-testid="stHorizontalBlock"] .stButton > button {
+div[data-testid="stHorizontalBlock"] .stButton>button {
     background: transparent !important;
     border: none !important;
     color: var(--text-secondary) !important;
@@ -157,12 +185,12 @@ div[data-testid="stHorizontalBlock"] .stButton > button {
     box-shadow: none !important;
 }
 
-div[data-testid="stHorizontalBlock"] .stButton > button:hover {
+div[data-testid="stHorizontalBlock"] .stButton>button:hover {
     background: var(--cyan-dim) !important;
     color: var(--cyan) !important;
 }
 
-div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
+div[data-testid="stHorizontalBlock"] .stButton>button[kind="primary"] {
     background: linear-gradient(135deg, var(--cyan), #0099CC) !important;
     color: #000 !important;
     font-weight: 700 !important;
@@ -206,14 +234,18 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
 .metric-card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 2px;
     background: linear-gradient(90deg, var(--cyan), transparent);
     opacity: 0;
     transition: opacity 0.3s;
 }
 
-.metric-card:hover::before { opacity: 1; }
+.metric-card:hover::before {
+    opacity: 1;
+}
 
 .mc-label {
     font-size: 0.72rem;
@@ -242,8 +274,13 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     gap: 0.3rem;
 }
 
-.mc-trend.down { color: var(--rose); }
-.mc-trend.neutral { color: var(--text-secondary); }
+.mc-trend.down {
+    color: var(--rose);
+}
+
+.mc-trend.neutral {
+    color: var(--text-secondary);
+}
 
 /* ─── CAREER MATCH CARDS ─── */
 .career-card {
@@ -303,10 +340,25 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     margin-bottom: 1rem;
 }
 
-.swot-strength  { background: rgba(0, 232, 135, 0.06); border: 1px solid rgba(0, 232, 135, 0.2); }
-.swot-weakness  { background: rgba(255, 77, 106, 0.06); border: 1px solid rgba(255, 77, 106, 0.2); }
-.swot-opportunity { background: rgba(255, 184, 0, 0.06); border: 1px solid rgba(255, 184, 0, 0.25); }
-.swot-threat    { background: rgba(139, 92, 246, 0.06); border: 1px solid rgba(139, 92, 246, 0.25); }
+.swot-strength {
+    background: rgba(0, 232, 135, 0.06);
+    border: 1px solid rgba(0, 232, 135, 0.2);
+}
+
+.swot-weakness {
+    background: rgba(255, 77, 106, 0.06);
+    border: 1px solid rgba(255, 77, 106, 0.2);
+}
+
+.swot-opportunity {
+    background: rgba(255, 184, 0, 0.06);
+    border: 1px solid rgba(255, 184, 0, 0.25);
+}
+
+.swot-threat {
+    background: rgba(139, 92, 246, 0.06);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+}
 
 .swot-title {
     font-family: 'Syne', sans-serif;
@@ -315,32 +367,59 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     margin-bottom: 0.8rem;
 }
 
-.swot-strength .swot-title  { color: #00E887; }
-.swot-weakness .swot-title  { color: #FF4D6A; }
-.swot-opportunity .swot-title { color: #FFB800; }
-.swot-threat .swot-title    { color: #A78BFA; }
+.swot-strength .swot-title {
+    color: #00E887;
+}
+
+.swot-weakness .swot-title {
+    color: #FF4D6A;
+}
+
+.swot-opportunity .swot-title {
+    color: #FFB800;
+}
+
+.swot-threat .swot-title {
+    color: #A78BFA;
+}
 
 .swot-item {
     color: var(--text-secondary);
     font-size: 0.88rem;
     padding: 0.4rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
     display: flex;
     align-items: flex-start;
     gap: 0.5rem;
 }
 
-.swot-item:last-child { border-bottom: none; }
+.swot-item:last-child {
+    border-bottom: none;
+}
+
 .swot-dot {
-    width: 6px; height: 6px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     margin-top: 0.35rem;
     flex-shrink: 0;
 }
-.swot-strength .swot-dot  { background: #00E887; }
-.swot-weakness .swot-dot  { background: #FF4D6A; }
-.swot-opportunity .swot-dot { background: #FFB800; }
-.swot-threat .swot-dot    { background: #A78BFA; }
+
+.swot-strength .swot-dot {
+    background: #00E887;
+}
+
+.swot-weakness .swot-dot {
+    background: #FF4D6A;
+}
+
+.swot-opportunity .swot-dot {
+    background: #FFB800;
+}
+
+.swot-threat .swot-dot {
+    background: #A78BFA;
+}
 
 /* ─── TIMELINE / ACHIEVEMENTS ─── */
 .achievement-item {
@@ -355,10 +434,25 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     transition: all 0.2s;
 }
 
-.achievement-item:hover { border-color: var(--cyan-border); }
-.achievement-icon { font-size: 1.8rem; }
-.achievement-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
-.achievement-date { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.1rem; }
+.achievement-item:hover {
+    border-color: var(--cyan-border);
+}
+
+.achievement-icon {
+    font-size: 1.8rem;
+}
+
+.achievement-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.achievement-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+}
 
 /* ─── SKILL BARS ─── */
 .skill-row {
@@ -373,7 +467,10 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     margin-bottom: 0.4rem;
 }
 
-.skill-label span:last-child { color: var(--cyan); font-weight: 600; }
+.skill-label span:last-child {
+    color: var(--cyan);
+    font-weight: 600;
+}
 
 .skill-bar-bg {
     height: 6px;
@@ -419,10 +516,29 @@ div[data-testid="stHorizontalBlock"] .stButton > button[kind="primary"] {
     font-weight: 600;
 }
 
-.pill-cyan   { background: var(--cyan-dim); color: var(--cyan); border: 1px solid var(--cyan-border); }
-.pill-amber  { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(255,184,0,0.3); }
-.pill-green  { background: rgba(0,232,135,0.1); color: var(--emerald); border: 1px solid rgba(0,232,135,0.25); }
-.pill-rose   { background: rgba(255,77,106,0.1); color: var(--rose); border: 1px solid rgba(255,77,106,0.25); }
+.pill-cyan {
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    border: 1px solid var(--cyan-border);
+}
+
+.pill-amber {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid rgba(255, 184, 0, 0.3);
+}
+
+.pill-green {
+    background: rgba(0, 232, 135, 0.1);
+    color: var(--emerald);
+    border: 1px solid rgba(0, 232, 135, 0.25);
+}
+
+.pill-rose {
+    background: rgba(255, 77, 106, 0.1);
+    color: var(--rose);
+    border: 1px solid rgba(255, 77, 106, 0.25);
+}
 
 /* ─── INTAKE FORM ─── */
 .intake-hero {
@@ -469,29 +585,83 @@ section[data-testid="stSidebar"] * {
     margin-bottom: 0.5rem;
 }
 
-.sidebar-metric-label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-.sidebar-metric-value { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+.sidebar-metric-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-metric-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
 
 /* ─── STREAMLIT OVERRIDES ─── */
-.stSelectbox > div > div,
-.stTextInput > div > div > input {
+.stSelectbox>div>div,
+.stTextInput>div>div>input {
     background: var(--slate-700) !important;
     border: 1px solid var(--slate-500) !important;
     color: var(--text-primary) !important;
     border-radius: var(--radius-sm) !important;
 }
 
-.stSlider > div > div > div { background: var(--cyan) !important; }
-.stMetric { background: var(--slate-700); border-radius: var(--radius-md); padding: 0.8rem 1rem; border: 1px solid var(--slate-500); }
-.stMetric label { color: var(--text-muted) !important; font-size: 0.75rem !important; text-transform: uppercase; letter-spacing: 1px; }
-.stMetric [data-testid="metric-container"] [data-testid="stMetricValue"] { color: var(--text-primary) !important; font-family: 'Syne', sans-serif !important; }
+.stSlider>div>div>div {
+    background: var(--cyan) !important;
+}
 
-.stExpander { background: var(--slate-700) !important; border: 1px solid var(--slate-500) !important; border-radius: var(--radius-md) !important; }
-.stExpander summary { color: var(--text-primary) !important; font-weight: 600 !important; }
+.stMetric {
+    background: var(--slate-700);
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--slate-500);
+}
 
-.stForm { background: var(--slate-700); border: 1px solid var(--slate-500); border-radius: var(--radius-lg); padding: 1.5rem; }
+.stMetric label {
+    color: var(--text-muted) !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-.stButton > button {
+.stMetric [data-testid="metric-container"] [data-testid="stMetricValue"] {
+    color: var(--text-primary) !important;
+    font-family: 'Syne', sans-serif !important;
+}
+
+/* ─── EXPANDERS ─── */
+[data-testid="stExpander"] {
+    background: var(--slate-700) !important;
+    border: 1px solid var(--slate-500) !important;
+    border-radius: var(--radius-md) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+[data-testid="stExpander"] summary {
+    background: var(--slate-700) !important;
+    border-radius: var(--radius-md) !important;
+}
+
+[data-testid="stExpander"] summary * {
+    color: var(--text-primary) !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+
+
+.stForm {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+}
+
+.stButton>button {
     background: var(--cyan-dim) !important;
     border: 1px solid var(--cyan-border) !important;
     color: var(--cyan) !important;
@@ -501,14 +671,14 @@ section[data-testid="stSidebar"] * {
     transition: all 0.2s !important;
 }
 
-.stButton > button:hover {
+.stButton>button:hover {
     background: var(--cyan) !important;
     color: #000 !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3) !important;
 }
 
-.stDownloadButton > button {
+.stDownloadButton>button {
     background: rgba(255, 184, 0, 0.1) !important;
     border: 1px solid rgba(255, 184, 0, 0.3) !important;
     color: var(--amber) !important;
@@ -516,12 +686,21 @@ section[data-testid="stSidebar"] * {
     font-weight: 600 !important;
 }
 
-.stSuccess { background: rgba(0, 232, 135, 0.08) !important; border: 1px solid rgba(0, 232, 135, 0.25) !important; border-radius: var(--radius-sm) !important; }
+.stSuccess {
+    background: rgba(0, 232, 135, 0.08) !important;
+    border: 1px solid rgba(0, 232, 135, 0.25) !important;
+    border-radius: var(--radius-sm) !important;
+}
 
-hr { border-color: var(--slate-500) !important; }
+hr {
+    border-color: var(--slate-500) !important;
+}
 
 /* ─── PLOTLY CHART CONTAINER ─── */
-.js-plotly-plot { border-radius: var(--radius-md); overflow: hidden; }
+.js-plotly-plot {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
 
 /* ─── STAT GRID ─── */
 .stat-grid {
@@ -565,7 +744,9 @@ hr { border-color: var(--slate-500) !important; }
     text-align: left;
 }
 
-.roadmap-item:last-child { border-bottom: none; }
+.roadmap-item:last-child {
+    border-bottom: none;
+}
 
 /* ─── ANIMATED DIVIDER ─── */
 .glow-divider {
@@ -584,14 +765,34 @@ hr { border-color: var(--slate-500) !important; }
     height: 100%;
 }
 
-.about-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
-.about-feature-title { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
-.about-feature-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+.about-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.about-feature-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.about-feature-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
 
 /* ─── RESPONSIVE ─── */
 @media (max-width: 768px) {
-    .hero-wordmark { font-size: 2.8rem; }
-    .mc-value { font-size: 1.8rem; }
+    .hero-wordmark {
+        font-size: 2.8rem;
+    }
+
+    .mc-value {
+        font-size: 1.8rem;
+    }
 }
 
 /* ── Hide Streamlit default page nav links in sidebar ── */

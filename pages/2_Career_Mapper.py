@@ -81,7 +81,28 @@ with c2:
 st.markdown(glow_divider(), unsafe_allow_html=True)
 
 # ── Ranked career cards ────────────────────────────────────────────────────
+st.markdown("""
+<style>
+/* High-precedence fix for expander titles */
+[data-testid="stExpander"] summary {
+    background: #141D2E !important;
+    color: #E2E8F0 !important;
+    border-radius: 12px !important;
+    padding: 0.5rem 1rem !important;
+}
+[data-testid="stExpander"] summary span,
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary div {
+    color: #E2E8F0 !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+</style>
+""", unsafe_allow_html=True)
 st.markdown("#### 🚀 Personalised Career Pathways")
+
 
 for career in ranked:
     fit = career["fit"]
