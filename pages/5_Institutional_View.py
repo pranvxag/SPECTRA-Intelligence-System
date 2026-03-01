@@ -9,9 +9,11 @@ from components.sidebar import render_sidebar
 from components.navbar import render_navbar
 from components.cards import section_title, metric_card, glow_divider
 from components.charts import stacked_bar, line_chart, donut_chart
+from utils.auth import require_admin
 
 st.set_page_config(page_title="SPECTRA — Institutional View", page_icon="🏛️", layout="wide")
 load_css()
+require_admin()   # 🔒 Admin only
 render_sidebar()
 st.session_state["_current_page"] = "Institutional View"
 render_navbar()

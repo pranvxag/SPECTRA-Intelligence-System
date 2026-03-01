@@ -9,6 +9,8 @@ from components.cards import section_title, about_feature, formula_box, glow_div
 
 st.set_page_config(page_title="SPECTRA — About", page_icon="❓", layout="wide")
 load_css()
+from utils.auth import require_login
+require_login()
 render_sidebar()
 st.session_state["_current_page"] = "About"
 render_navbar()

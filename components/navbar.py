@@ -3,6 +3,7 @@ components/navbar.py — Shared top navigation bar
 Import and call render_navbar() at the top of EVERY page.
 """
 import streamlit as st
+from utils.auth import get_role, is_admin
 
 
 def render_navbar():
@@ -49,14 +50,14 @@ def render_navbar():
     """, unsafe_allow_html=True)
 
     current = st.session_state.get("_current_page", "")
+    admin   = is_admin()
 
     row1 = [
         ("🎯", "Intelligence Hub",   "pages/1_Intelligence_Hub.py"),
         ("🗺️", "Career Mapper",      "pages/2_Career_Mapper.py"),
         ("📊", "SWOT Analysis",      "pages/3_SWOT_Analysis.py"),
         ("📈", "Growth Tracker",     "pages/4_Growth_Tracker.py"),
-        ("🏛️", "Institutional",      "pages/5_Institutional_View.py"),
-    ]
+    ] + ([("🏛️", "Institutional", "pages/5_Institutional_View.py")] if admin else [])
 
     row2 = [
         ("🤖", "Ask SPECTRA",        "pages/7_Ask_Spectra.py"),

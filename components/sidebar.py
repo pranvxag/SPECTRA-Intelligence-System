@@ -6,6 +6,7 @@ import streamlit as st
 from components.styles import load_css
 from utils.career_engine import compute_intelligence_score, rank_careers
 from utils.database import db
+from utils.auth import render_auth_sidebar
 
 
 def render_sidebar():
@@ -284,3 +285,7 @@ def render_sidebar():
             SPECTRA v2.0 · IIT Techkriti 2026
         </div>
         """, unsafe_allow_html=True)
+
+        # ── Auth / Logout widget ─────────────────────────────────
+        st.markdown("<div style='height:0.5rem;'></div>", unsafe_allow_html=True)
+        render_auth_sidebar()

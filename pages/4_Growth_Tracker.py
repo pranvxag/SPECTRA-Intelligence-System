@@ -15,6 +15,8 @@ from components.charts import line_chart, area_chart
 
 st.set_page_config(page_title="SPECTRA — Growth Tracker", page_icon="📈", layout="wide")
 load_css()
+from utils.auth import require_login
+require_login()
 render_sidebar()
 st.session_state["_current_page"] = "Growth Tracker"
 render_navbar()

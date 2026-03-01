@@ -6,6 +6,7 @@ import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from utils.database import db
+from utils.auth import require_login, get_role, get_display_name, render_auth_sidebar
 from components.styles import load_css
 from components.sidebar import render_sidebar
 
@@ -17,6 +18,9 @@ st.set_page_config(
 )
 
 load_css()
+
+# ── Auth (must be before any content) ────────────────────────────────────
+require_login()
 
 # ── Restore last session from DB on refresh ───────────────────────────────
 if "student_profile" not in st.session_state:

@@ -11,6 +11,8 @@ from components.cards import section_title, glow_divider
 
 st.set_page_config(page_title="SPECTRA — Resume Reviewer", page_icon="📄", layout="wide")
 load_css()
+from utils.auth import require_login
+require_login()
 render_sidebar()
 st.session_state["_current_page"] = "Resume Reviewer"
 render_navbar()

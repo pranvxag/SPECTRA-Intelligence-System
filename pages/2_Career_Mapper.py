@@ -15,6 +15,8 @@ from utils.career_engine import rank_careers, CAREERS
 
 st.set_page_config(page_title="SPECTRA — Career Mapper", page_icon="🗺️", layout="wide")
 load_css()
+from utils.auth import require_login
+require_login()
 render_sidebar()
 st.session_state["_current_page"] = "Career Mapper"
 render_navbar()

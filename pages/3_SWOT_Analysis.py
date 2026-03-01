@@ -11,6 +11,8 @@ from utils.report_generator import generate_student_excel, generate_profile_json
 
 st.set_page_config(page_title="SPECTRA — SWOT Analysis", page_icon="📊", layout="wide")
 load_css()
+from utils.auth import require_login
+require_login()
 render_sidebar()
 st.session_state["_current_page"] = "SWOT Analysis"
 render_navbar()

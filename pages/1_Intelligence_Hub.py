@@ -16,6 +16,8 @@ from utils.data_engine import get_feature_vector
 
 st.set_page_config(page_title="SPECTRA — Intelligence Hub", page_icon="🎯", layout="wide")
 load_css()
+from utils.auth import require_login
+require_login()
 render_sidebar()
 st.session_state["_current_page"] = "Intelligence Hub"
 render_navbar()
