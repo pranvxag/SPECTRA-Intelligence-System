@@ -601,14 +601,3 @@ section[data-testid="stSidebar"] nav,
 section[data-testid="stSidebar"] ul[data-testid="stSidebarNavItems"] {
     display: none !important;
 }
-
-/* ── Fix expander arrow icon showing as text ── */
-button[data-testid="stExpanderToggleIcon"] {
-    font-size: 0 !important;
-}
-[data-testid="stExpander"] summary span[data-testid="stExpanderToggleIcon"] span {
-    display: none !important;
-}
-/* Show a proper arrow instead */
-details > summary::marker { font-size: 1rem; }
-details[open] > summary { color: #00D4FF; }
