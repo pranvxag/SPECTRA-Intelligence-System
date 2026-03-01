@@ -16,61 +16,61 @@ from typing import Tuple, List, Dict, Any
 # ── Expected schema ────────────────────────────────────────────────────────
 REQUIRED_COLUMNS = [
     "Student ID", "Full Name", "Department / Branch",
-    "CGPA (0–10) [R]", "Technical Skills [R]", "Analytical Thinking [R]",
-    "Effort Level (1–5) [R]", "Career Goal [R]", "Academic Trend [R]",
+    "CGPA (0–10)", "Technical Skills", "Analytical Thinking",
+    "Effort Level (1–5)", "Career Goal", "Academic Trend",
 ]
 
 OPTIONAL_COLUMNS = {
-    "College / Institute [R]":   "Unknown Institute",
-    "Year of Study [R]":         "2nd Year",
-    "Current Semester [R]":      4,
-    "Active Backlogs":           0,
-    "Creative Thinking":         50,
-    "Communication":             55,
-    "Leadership":                45,
-    "Consistency":               60,
-    "Primary Interest [R]":      "Programming",
-    "Secondary Interest":        "",
-    "Tertiary Interest":         "",
-    "Projects Completed [R]":    0,
-    "Internships Done":          0,
-    "Hackathons":                0,
-    "Certifications":            0,
-    "Extracurriculars":          0,
-    "Target Timeline":           "1–2 years",
-    "10th % / GPA":              75,
-    "12th % / GPA":              75,
+    "College / Institute":   "Unknown Institute",
+    "Year of Study":         "2nd Year",
+    "Current Semester":      4,
+    "Active Backlogs":       0,
+    "Creative Thinking":     50,
+    "Communication":         55,
+    "Leadership":            45,
+    "Consistency":           60,
+    "Primary Interest":      "Programming",
+    "Secondary Interest":    "",
+    "Tertiary Interest":     "",
+    "Projects Completed":    0,
+    "Internships Done":      0,
+    "Hackathons":            0,
+    "Certifications":        0,
+    "Extracurriculars":      0,
+    "Target Timeline":       "1–2 years",
+    "10th % / GPA":          75,
+    "12th % / GPA":          75,
 }
 
 # Column alias map (human-readable → internal key)
 COL_ALIASES = {
     "Student ID":                "student_id",
     "Full Name":                 "name",
-    "College / Institute [R]":   "college",
-    "Department / Branch":       "branch",
-    "Year of Study [R]":         "year",
-    "Current Semester [R]":      "semester",
-    "CGPA (0–10) [R]":           "cgpa",
+    "College / Institute":   "college",
+    "Department / Branch":   "branch",
+    "Year of Study":         "year",
+    "Current Semester":      "semester",
+    "CGPA (0–10)":           "cgpa",
     "Active Backlogs":           "backlogs",
-    "Academic Trend [R]":        "academic_trend",
+    "Academic Trend":        "academic_trend",
     "10th % / GPA":              "grade_10",
     "12th % / GPA":              "grade_12",
-    "Technical Skills [R]":      "skill_technical",
-    "Analytical Thinking [R]":   "skill_analytical",
+    "Technical Skills":      "skill_technical",
+    "Analytical Thinking":   "skill_analytical",
     "Creative Thinking":         "skill_creative",
     "Communication":             "skill_communication",
     "Leadership":                "skill_leadership",
     "Consistency":               "skill_consistency",
-    "Primary Interest [R]":      "interest_1",
+    "Primary Interest":      "interest_1",
     "Secondary Interest":        "interest_2",
     "Tertiary Interest":         "interest_3",
-    "Projects Completed [R]":    "projects",
+    "Projects Completed":    "projects",
     "Internships Done":          "internships",
     "Hackathons":                "hackathons",
     "Certifications":            "certifications",
     "Extracurriculars":          "extracurriculars",
-    "Effort Level (1–5) [R]":    "effort",
-    "Career Goal [R]":           "career_goal",
+    "Effort Level (1–5)":    "effort",
+    "Career Goal":           "career_goal",
     "Target Timeline":           "timeline",
 }
 
@@ -96,19 +96,57 @@ INTEREST_MAP = {
 def load_file(file_obj) -> Tuple[pd.DataFrame | None, List[str]]:
     """
     Load an uploaded Streamlit file object (Excel or CSV).
+    Auto-detects the header row (scans first 10 rows for 'Student ID').
     Returns (DataFrame, list_of_errors).
     """
     errors = []
     try:
-        name = getattr(file_obj, "name", "")
-        if name.endswith(".csv"):
+        name = getattr(file_obj, "name", "") if hasattr(file_obj, "name") else ""
+
+        if str(name).endswith(".csv"):
             df = pd.read_csv(file_obj)
         else:
-            df = pd.read_excel(file_obj, sheet_name="Student Data")
-        return df, errors
+            # Try reading 'Student Data' sheet; fall back to first sheet
+            try:
+                raw = pd.read_excel(file_obj, sheet_name="Student Data", header=None)
+            except Exception:
+                raw = pd.read_excel(file_obj, header=None)
+
+            # Auto-detect header row: find the row containing 'Student ID'
+            header_row = 0
+            for i in range(min(10, len(raw))):
+                row_vals = [str(v).strip().lower() for v in raw.iloc[i].values]
+                if any("student id" in v for v in row_vals):
+                    header_row = i
+                    break
+
+            # Re-read with correct header row
+            try:
+                df = pd.read_excel(file_obj, sheet_name="Student Data", header=header_row)
+            except Exception:
+                df = pd.read_excel(file_obj, header=header_row)
+
+        # ── Normalise column names: strip [R] markers, extra spaces ──────
+        df.columns = [_normalise_col(c) for c in df.columns]
+
+        # Drop rows where Student ID is blank (title/spacer rows)
+        if "Student ID" in df.columns:
+            df = df[df["Student ID"].notna() & (df["Student ID"].astype(str).str.strip() != "")]
+
+        return df.reset_index(drop=True), errors
+
     except Exception as e:
         errors.append(f"File read error: {e}")
         return None, errors
+
+
+def _normalise_col(col_name: str) -> str:
+    """Strip [R] markers, extra whitespace from column headers."""
+    import re
+    s = str(col_name).strip()
+    s = re.sub(r"\s*\[R\]\s*", "", s)   # remove [R]
+    s = re.sub(r"\s+", " ", s).strip()      # collapse whitespace
+    return s
 
 
 def validate(df: pd.DataFrame) -> Tuple[bool, List[str], List[str]]:
@@ -132,19 +170,19 @@ def validate(df: pd.DataFrame) -> Tuple[bool, List[str], List[str]]:
         return False, errors, warnings
 
     # Value range checks
-    if "CGPA (0–10) [R]" in df.columns:
-        invalid_cgpa = df[~df["CGPA (0–10) [R]"].between(0, 10, inclusive="both")]["Student ID"].tolist()
+    if "CGPA (0–10)" in df.columns:
+        invalid_cgpa = df[~df["CGPA (0–10)"].between(0, 10, inclusive="both")]["Student ID"].tolist()
         if invalid_cgpa:
             warnings.append(f"CGPA out of 0–10 range for IDs: {invalid_cgpa[:5]}")
 
-    for skill_col in ["Technical Skills [R]", "Analytical Thinking [R]"]:
+    for skill_col in ["Technical Skills", "Analytical Thinking"]:
         if skill_col in df.columns:
             invalid = df[~df[skill_col].between(0, 100)]["Student ID"].tolist()
             if invalid:
                 warnings.append(f"Skill score out of 0–100 for '{skill_col}': {invalid[:5]}")
 
-    if "Effort Level (1–5) [R]" in df.columns:
-        invalid_effort = df[~df["Effort Level (1–5) [R]"].between(1, 5)]["Student ID"].tolist()
+    if "Effort Level (1–5)" in df.columns:
+        invalid_effort = df[~df["Effort Level (1–5)"].between(1, 5)]["Student ID"].tolist()
         if invalid_effort:
             warnings.append(f"Effort out of 1–5 range for IDs: {invalid_effort[:5]}")
 
