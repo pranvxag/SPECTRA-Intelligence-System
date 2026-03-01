@@ -56,6 +56,7 @@ def render_navbar():
         ("📊", "SWOT Analysis",      "pages/3_SWOT_Analysis.py"),
         ("📈", "Growth Tracker",     "pages/4_Growth_Tracker.py"),
         ("🏛️", "Institutional",      "pages/5_Institutional_View.py"),
+        ("🤖", "Ask SPECTRA",        "pages/7_Ask_Spectra.py"),
         ("❓", "About",              "pages/6_About.py"),
     ]
 
