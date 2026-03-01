@@ -256,7 +256,26 @@ class SpectraDB:
                     WHERE student_id=?
                     ORDER BY rank
                 """, (student_id,)).fetchall()
-                return [dict(r) for r in rows]
+                
+                from utils.career_engine import CAREERS
+                def _norm(s): return s.lower().replace(" ","").replace("/","").replace("-","")
+                results = []
+                for r in rows:
+                    base_dict = dict(r)
+                    matched_c = next((c for c in CAREERS if _norm(c["title"]) == _norm(base_dict["title"])), None)
+                    if not matched_c:
+                        matched_c = next((c for c in CAREERS if _norm(base_dict["title"])[:8] in _norm(c["title"])), None)
+                    
+                    fallback = {
+                        "salary": "—",
+                        "demand": "—",
+                        "skills_needed": [],
+                        "path": "—",
+                        "id": base_dict["title"].lower().replace(" ", "_")
+                    }
+                    career_info = matched_c or fallback
+                    results.append({**career_info, **base_dict})
+                return results
         except Exception:
             return []
 
