@@ -132,8 +132,8 @@ class SpectraDB:
                         INSERT INTO career_results
                         (student_id,career_title,fit_score,ml_score,formula_score,rank)
                         VALUES (?,?,?,?,?,?)
-                    """, [(profile["student_id"], c["title"], c["fit"],
-                           c.get("ml_score",0), c.get("formula_score",0), i+1)
+                    """, [(profile["student_id"], str(c["title"]), float(c["fit"]),
+                           float(c.get("ml_score",0)), float(c.get("formula_score",0)), int(i+1))
                           for i, c in enumerate(career_results[:8])])
             return True
         except Exception as e:
@@ -332,7 +332,12 @@ class SupabaseDB:
     def _conn(self):
         import psycopg2
         import psycopg2.extras
-        conn = psycopg2.connect(self.db_url, connect_timeout=10)
+        import streamlit as st
+        
+        # Dynamically fetch the latest URL from secrets in case it was updated while the app is running
+        current_url = st.secrets.get("supabase", {}).get("db_url", self.db_url)
+        
+        conn = psycopg2.connect(current_url, connect_timeout=10)
         conn.autocommit = False
         return conn
 
@@ -434,8 +439,8 @@ class SupabaseDB:
                             INSERT INTO career_results
                             (student_id,career_title,fit_score,ml_score,formula_score,rank)
                             VALUES (%s,%s,%s,%s,%s,%s)
-                        """, [(profile["student_id"], c["title"], c["fit"],
-                               c.get("ml_score",0), c.get("formula_score",0), i+1)
+                        """, [(profile["student_id"], str(c["title"]), float(c["fit"]),
+                               float(c.get("ml_score",0)), float(c.get("formula_score",0)), int(i+1))
                               for i, c in enumerate(career_results[:8])])
                 conn.commit()
             return True
