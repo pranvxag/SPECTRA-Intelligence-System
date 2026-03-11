@@ -1,0 +1,804 @@
+/* ─────────────────────────────────────────────
+   SPECTRA — Design System v2.0
+   Font: Syne (Display) + Plus Jakarta Sans (Body)
+   Palette: Deep Slate + Electric Cyan + Amber
+   ───────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ── Reset & Base ── */
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+.stApp {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: #080C14 !important;
+    color: #E2E8F0;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0D1117;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00D4FF33;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #00D4FF66;
+}
+
+/* ── Hide Streamlit chrome ── */
+#MainMenu,
+footer,
+header {
+    visibility: hidden;
+}
+
+.block-container {
+    padding-top: 1rem !important;
+    max-width: 1400px;
+}
+
+/* ── LOCK SIDEBAR OPEN — hide collapse/expand controls ── */
+[data-testid="stSidebarCollapseButton"],
+[data-testid="collapsedControl"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+section[data-testid="stSidebar"] {
+    transform: none !important;
+    width: 21rem !important;
+    min-width: 21rem !important;
+    display: flex !important;
+    visibility: visible !important;
+}
+
+/* ── CSS Variables ── */
+:root {
+    --cyan: #00D4FF;
+    --cyan-dim: rgba(0, 212, 255, 0.12);
+    --cyan-border: rgba(0, 212, 255, 0.25);
+    --amber: #FFB800;
+    --amber-dim: rgba(255, 184, 0, 0.12);
+    --emerald: #00E887;
+    --rose: #FF4D6A;
+    --slate-900: #080C14;
+    --slate-800: #0D1421;
+    --slate-700: #141D2E;
+    --slate-600: #1C2740;
+    --slate-500: #2A3A58;
+    --text-primary: #E2E8F0;
+    --text-secondary: #7A90B0;
+    --text-muted: #4A5A7A;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+}
+
+/* ─── HERO HEADER ─── */
+.spectra-hero {
+    background: linear-gradient(135deg, #0D1421 0%, #0A1628 40%, #0D1421 100%);
+    border: 1px solid var(--cyan-border);
+    border-radius: var(--radius-xl);
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.spectra-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 500px;
+    height: 200px;
+    background: radial-gradient(ellipse, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.spectra-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    right: -40px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(ellipse, rgba(255, 184, 0, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.hero-wordmark {
+    font-family: 'Syne', sans-serif;
+    font-size: 4.5rem;
+    font-weight: 800;
+    letter-spacing: -2px;
+    background: linear-gradient(135deg, #FFFFFF 30%, var(--cyan) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+    line-height: 1;
+}
+
+.hero-tagline {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    font-weight: 400;
+    margin: 0.8rem 0 1.2rem;
+    letter-spacing: 0.5px;
+}
+
+.hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--amber-dim);
+    border: 1px solid rgba(255, 184, 0, 0.3);
+    color: var(--amber);
+    padding: 0.4rem 1.2rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* ─── NAVIGATION BAR ─── */
+.spectra-nav {
+    background: var(--slate-800);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-xl);
+    padding: 0.6rem 1rem;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Override Streamlit button styles inside nav */
+div[data-testid="stHorizontalBlock"] .stButton>button {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-secondary) !important;
+    border-radius: var(--radius-md) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    box-shadow: none !important;
+}
+
+div[data-testid="stHorizontalBlock"] .stButton>button:hover {
+    background: var(--cyan-dim) !important;
+    color: var(--cyan) !important;
+}
+
+div[data-testid="stHorizontalBlock"] .stButton>button[kind="primary"] {
+    background: linear-gradient(135deg, var(--cyan), #0099CC) !important;
+    color: #000 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3) !important;
+}
+
+/* ─── SECTION HEADING ─── */
+.section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 1.5rem 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-title span.accent {
+    color: var(--cyan);
+}
+
+/* ─── METRIC CARDS ─── */
+.metric-card {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.metric-card:hover {
+    border-color: var(--cyan-border);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 212, 255, 0.1);
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.metric-card:hover::before {
+    opacity: 1;
+}
+
+.mc-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 0.5rem;
+}
+
+.mc-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+.mc-trend {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--emerald);
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.mc-trend.down {
+    color: var(--rose);
+}
+
+.mc-trend.neutral {
+    color: var(--text-secondary);
+}
+
+/* ─── CAREER MATCH CARDS ─── */
+.career-card {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-md);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.8rem;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.career-card:hover {
+    border-color: var(--cyan-border);
+    background: var(--slate-600);
+    transform: translateX(4px);
+}
+
+.career-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.career-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--amber);
+}
+
+.career-bar-bg {
+    height: 5px;
+    background: var(--slate-500);
+    border-radius: 10px;
+    margin-top: 0.6rem;
+    overflow: hidden;
+}
+
+.career-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--cyan), #0077FF);
+}
+
+.career-trend {
+    font-size: 0.78rem;
+    color: var(--emerald);
+    text-align: right;
+    margin-top: 0.4rem;
+}
+
+/* ─── SWOT CARDS ─── */
+.swot-card {
+    border-radius: var(--radius-md);
+    padding: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+.swot-strength {
+    background: rgba(0, 232, 135, 0.06);
+    border: 1px solid rgba(0, 232, 135, 0.2);
+}
+
+.swot-weakness {
+    background: rgba(255, 77, 106, 0.06);
+    border: 1px solid rgba(255, 77, 106, 0.2);
+}
+
+.swot-opportunity {
+    background: rgba(255, 184, 0, 0.06);
+    border: 1px solid rgba(255, 184, 0, 0.25);
+}
+
+.swot-threat {
+    background: rgba(139, 92, 246, 0.06);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+}
+
+.swot-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.8rem;
+}
+
+.swot-strength .swot-title {
+    color: #00E887;
+}
+
+.swot-weakness .swot-title {
+    color: #FF4D6A;
+}
+
+.swot-opportunity .swot-title {
+    color: #FFB800;
+}
+
+.swot-threat .swot-title {
+    color: #A78BFA;
+}
+
+.swot-item {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.swot-item:last-child {
+    border-bottom: none;
+}
+
+.swot-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin-top: 0.35rem;
+    flex-shrink: 0;
+}
+
+.swot-strength .swot-dot {
+    background: #00E887;
+}
+
+.swot-weakness .swot-dot {
+    background: #FF4D6A;
+}
+
+.swot-opportunity .swot-dot {
+    background: #FFB800;
+}
+
+.swot-threat .swot-dot {
+    background: #A78BFA;
+}
+
+/* ─── TIMELINE / ACHIEVEMENTS ─── */
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    padding: 1rem 1.2rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 0.6rem;
+    transition: all 0.2s;
+}
+
+.achievement-item:hover {
+    border-color: var(--cyan-border);
+}
+
+.achievement-icon {
+    font-size: 1.8rem;
+}
+
+.achievement-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.achievement-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+}
+
+/* ─── SKILL BARS ─── */
+.skill-row {
+    margin: 0.9rem 0;
+}
+
+.skill-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+}
+
+.skill-label span:last-child {
+    color: var(--cyan);
+    font-weight: 600;
+}
+
+.skill-bar-bg {
+    height: 6px;
+    background: var(--slate-500);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.skill-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, var(--cyan), #0099CC);
+}
+
+/* ─── GLASS PANEL ─── */
+.glass-panel {
+    background: rgba(13, 20, 33, 0.8);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* ─── FORMULA BOX ─── */
+.formula-box {
+    background: var(--slate-800);
+    border: 1px solid var(--cyan-border);
+    border-left: 3px solid var(--cyan);
+    border-radius: var(--radius-sm);
+    padding: 1rem 1.4rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    color: var(--cyan);
+    margin: 1rem 0;
+}
+
+/* ─── PILL BADGE ─── */
+.pill {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.pill-cyan {
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    border: 1px solid var(--cyan-border);
+}
+
+.pill-amber {
+    background: var(--amber-dim);
+    color: var(--amber);
+    border: 1px solid rgba(255, 184, 0, 0.3);
+}
+
+.pill-green {
+    background: rgba(0, 232, 135, 0.1);
+    color: var(--emerald);
+    border: 1px solid rgba(0, 232, 135, 0.25);
+}
+
+.pill-rose {
+    background: rgba(255, 77, 106, 0.1);
+    color: var(--rose);
+    border: 1px solid rgba(255, 77, 106, 0.25);
+}
+
+/* ─── INTAKE FORM ─── */
+.intake-hero {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border-bottom: 1px solid var(--slate-500);
+    margin-bottom: 2rem;
+}
+
+.intake-hero h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 30%, var(--cyan));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+/* ─── SIDEBAR ─── */
+section[data-testid="stSidebar"] {
+    background: var(--slate-800) !important;
+    border-right: 1px solid var(--slate-500) !important;
+}
+
+section[data-testid="stSidebar"] * {
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+.sidebar-brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--cyan);
+    margin-bottom: 0.2rem;
+}
+
+.sidebar-metric {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.sidebar-metric-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-metric-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ─── STREAMLIT OVERRIDES ─── */
+.stSelectbox>div>div,
+.stTextInput>div>div>input {
+    background: var(--slate-700) !important;
+    border: 1px solid var(--slate-500) !important;
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+.stSlider>div>div>div {
+    background: var(--cyan) !important;
+}
+
+.stMetric {
+    background: var(--slate-700);
+    border-radius: var(--radius-md);
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--slate-500);
+}
+
+.stMetric label {
+    color: var(--text-muted) !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.stMetric [data-testid="metric-container"] [data-testid="stMetricValue"] {
+    color: var(--text-primary) !important;
+    font-family: 'Syne', sans-serif !important;
+}
+
+/* ─── EXPANDERS ─── */
+[data-testid="stExpander"] {
+    background: var(--slate-700) !important;
+    border: 1px solid var(--slate-500) !important;
+    border-radius: var(--radius-md) !important;
+    margin-bottom: 0.5rem !important;
+}
+
+[data-testid="stExpander"] summary {
+    background: var(--slate-700) !important;
+    border-radius: var(--radius-md) !important;
+}
+
+[data-testid="stExpander"] summary * {
+    color: var(--text-primary) !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+
+
+.stForm {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+}
+
+.stButton>button {
+    background: var(--cyan-dim) !important;
+    border: 1px solid var(--cyan-border) !important;
+    color: var(--cyan) !important;
+    border-radius: var(--radius-md) !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+}
+
+.stButton>button:hover {
+    background: var(--cyan) !important;
+    color: #000 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 24px rgba(0, 212, 255, 0.3) !important;
+}
+
+.stDownloadButton>button {
+    background: rgba(255, 184, 0, 0.1) !important;
+    border: 1px solid rgba(255, 184, 0, 0.3) !important;
+    color: var(--amber) !important;
+    border-radius: var(--radius-md) !important;
+    font-weight: 600 !important;
+}
+
+.stSuccess {
+    background: rgba(0, 232, 135, 0.08) !important;
+    border: 1px solid rgba(0, 232, 135, 0.25) !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+hr {
+    border-color: var(--slate-500) !important;
+}
+
+/* ─── PLOTLY CHART CONTAINER ─── */
+.js-plotly-plot {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+/* ─── STAT GRID ─── */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+}
+
+/* ─── ROADMAP ─── */
+.roadmap-card {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-md);
+    padding: 1.2rem;
+    text-align: center;
+    height: 100%;
+}
+
+.roadmap-phase {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+}
+
+.roadmap-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+}
+
+.roadmap-item {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--slate-500);
+    text-align: left;
+}
+
+.roadmap-item:last-child {
+    border-bottom: none;
+}
+
+/* ─── ANIMATED DIVIDER ─── */
+.glow-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan-border), transparent);
+    margin: 1.5rem 0;
+}
+
+/* ─── ABOUT PAGE ─── */
+.about-feature {
+    background: var(--slate-700);
+    border: 1px solid var(--slate-500);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    text-align: center;
+    height: 100%;
+}
+
+.about-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.about-feature-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.about-feature-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+    .hero-wordmark {
+        font-size: 2.8rem;
+    }
+
+    .mc-value {
+        font-size: 1.8rem;
+    }
+}
+
+/* ── Hide Streamlit default page nav links in sidebar ── */
+section[data-testid="stSidebar"] [data-testid="stSidebarNav"],
+section[data-testid="stSidebar"] [data-testid="stSidebarNavItems"],
+section[data-testid="stSidebar"] nav,
+section[data-testid="stSidebar"] ul[data-testid="stSidebarNavItems"] {
+    display: none !important;
+}
